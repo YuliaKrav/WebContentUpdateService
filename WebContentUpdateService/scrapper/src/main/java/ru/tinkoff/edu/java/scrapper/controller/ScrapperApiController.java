@@ -41,24 +41,3 @@ public class ScrapperApiController {
     }
 
 }
-
-
-//import java.util.HashMap;
-//        import java.util.Map;
-//
-//@RestController
-//@RequestMapping("/api/v1")
-//public class BotApiUpdateController {
-//    private final Map<Integer, LinkUpdateRequest> history = new HashMap<>();
-//
-//    @PostMapping("/updates")
-//    public ResponseEntity<Void> processUpdate(@RequestBody LinkUpdateRequest linkUpdateRequest) {
-//        history.put(linkUpdateRequest.getId(), linkUpdateRequest);
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
-//
-//    @RequestMapping(value = "/{id}/updates", method = RequestMethod.GET)
-//    public ResponseEntity<LinkUpdateRequest> getUpdate(@PathVariable("id") int id) {
-//        return new ResponseEntity<>(history.get(id), HttpStatus.OK);
-//    }
-//}

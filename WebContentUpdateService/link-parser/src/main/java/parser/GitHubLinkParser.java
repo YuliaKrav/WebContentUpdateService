@@ -2,7 +2,6 @@ package parser;
 
 import parser.replies.GitHubReply;
 import parser.replies.LinkParserReplies;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 
