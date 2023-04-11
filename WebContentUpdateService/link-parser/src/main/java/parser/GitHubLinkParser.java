@@ -2,6 +2,7 @@ package parser;
 
 import parser.replies.GitHubReply;
 import parser.replies.LinkParserReplies;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -10,8 +11,7 @@ public final class GitHubLinkParser extends LinkProcessor implements LinkParser 
         super(nextLinkProcessor);
     }
 
-    @Override
-    public LinkParserReplies processParsing(String url) {
+    public LinkParserReplies process(String url) {
         try {
             URI uri = new URI(url);
             if ("github.com".equals(uri.getHost())) {
@@ -21,7 +21,7 @@ public final class GitHubLinkParser extends LinkProcessor implements LinkParser 
                     return new GitHubReply(url, pathSegments[1], pathSegments[2]);
                 }
             }
-            super.process(url);
+            return super.process(url);
 
         } catch (URISyntaxException e) {
             e.printStackTrace();

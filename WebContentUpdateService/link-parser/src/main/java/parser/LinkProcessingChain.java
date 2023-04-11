@@ -1,5 +1,7 @@
 package parser;
 
+import parser.replies.LinkParserReplies;
+
 public class LinkProcessingChain {
     LinkProcessor linkProcessorChain;
 
@@ -11,7 +13,7 @@ public class LinkProcessingChain {
         linkProcessorChain = new GitHubLinkParser(new StackOverflowLinkParser(new NullLinkParser(null)));
     }
 
-    public void process(String url) {
-        linkProcessorChain.process(url);
+    public LinkParserReplies process(String url) {
+        return linkProcessorChain.process(url);
     }
 }

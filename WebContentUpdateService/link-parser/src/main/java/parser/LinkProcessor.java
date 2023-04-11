@@ -10,11 +10,11 @@ public abstract class LinkProcessor {
         this.nextLinkProcessor = nextLinkProcessor;
     }
 
-    public void process(String url) {
-        if (url != null) {
-            nextLinkProcessor.processParsing(url);
+    public LinkParserReplies process(String url) {
+        if (nextLinkProcessor != null) {
+            return nextLinkProcessor.process(url);
         }
+        return null;
     }
 
-    public abstract LinkParserReplies processParsing(String url);
 }
