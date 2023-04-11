@@ -1,6 +1,7 @@
 package ru.tinkoff.edu.java.bot.service;
 
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@NoArgsConstructor(force = true)
 @Slf4j
 @Component
 public class TelegramBotService extends TelegramLongPollingBot implements BotCommands {
@@ -118,10 +120,9 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
         executeMessage(message);
     }
 
-    void sendList(Message message) {
+    private void sendList(Message message) {
         User user = message.getFrom();
         if (userToLinkStorage.containsKey(user)) {
-            getLinksListString(user);
             SendMessage send = new SendMessage();
             send.setChatId(Long.toString(message.getChatId()));
             send.setText(getLinksListString(user));

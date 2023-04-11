@@ -11,13 +11,13 @@ public class ClientConfiguration {
 
     @Bean
     public GitHubClient gitHubClient(
-            @Value("${github.api.base-url:" + GitHubClient.DEFAULT_BASE_URL + "}") String gitHubBaseUrl) {
+            @Value("${github.api.base-url:#{'${github.api.default-base-url}'}}") String gitHubBaseUrl) {
         return new GitHubClient(gitHubBaseUrl);
     }
 
     @Bean
     public StackOverflowClient stackOverflowClient(
-            @Value("${stackoverflow.api.base-url:" + StackOverflowClient.DEFAULT_BASE_URL + "}") String stackOverflowBaseUrl) {
+            @Value("${stackoverflow.api.base-url:#{'${stackoverflow.api.default-base-url}'}}") String stackOverflowBaseUrl) {
         return new StackOverflowClient(stackOverflowBaseUrl);
     }
 
