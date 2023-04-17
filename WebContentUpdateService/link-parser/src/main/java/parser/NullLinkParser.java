@@ -8,8 +8,7 @@ public final class NullLinkParser extends LinkProcessor implements LinkParser {
         super(nextLinkProcessor);
     }
 
-    @Override
-    public LinkParserReplies processParsing(String url) {
+    public LinkParserReplies process(String url) {
         System.out.println(url + " Nothing");
         return null;
     }

@@ -10,9 +10,7 @@ public final class StackOverflowLinkParser extends LinkProcessor implements Link
     public StackOverflowLinkParser(LinkProcessor nextLinkProcessor) {
         super(nextLinkProcessor);
     }
-
-    @Override
-    public LinkParserReplies processParsing(String url) {
+    public LinkParserReplies process(String url) {
         try {
             URI uri = new URI(url);
             if ("stackoverflow.com".equals(uri.getHost())) {
@@ -22,7 +20,7 @@ public final class StackOverflowLinkParser extends LinkProcessor implements Link
                     return new StackOverflowReply(url, pathSegments[2]);
                 }
             }
-            super.process(url);
+            return super.process(url);
         } catch (URISyntaxException e) {
             e.printStackTrace();
         }
