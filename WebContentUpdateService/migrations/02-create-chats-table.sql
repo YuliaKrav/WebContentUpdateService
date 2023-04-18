@@ -2,8 +2,7 @@
 
 --changeset webapp:2
 CREATE TABLE chats (
-    id SERIAL PRIMARY KEY,
-    chat_number INTEGER,
+    chat_number INTEGER PRIMARY KEY,
     user_name VARCHAR(300)
 )
 
