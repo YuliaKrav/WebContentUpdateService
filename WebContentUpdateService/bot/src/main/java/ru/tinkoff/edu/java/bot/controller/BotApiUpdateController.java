@@ -15,6 +15,7 @@ public class BotApiUpdateController {
 
     @PostMapping("/updates")
     public ResponseEntity<Void> processUpdate(@RequestBody LinkUpdateRequest linkUpdateRequest) {
+
         history.put(linkUpdateRequest.getId(), linkUpdateRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }

@@ -1,8 +1,8 @@
-package ru.tinkoff.edu.java.bot.dto;
+package ru.tinkoff.edu.java.scrapper.dto;
 
 import java.util.List;
 
-public final class LinkUpdateRequest {
+public class LinkUpdateRequest {
     private Integer id;
 
     private String url;
@@ -53,10 +53,3 @@ public final class LinkUpdateRequest {
         this.tgChatIds = tgChatIds;
     }
 }
-
-
-
-
-
-
-

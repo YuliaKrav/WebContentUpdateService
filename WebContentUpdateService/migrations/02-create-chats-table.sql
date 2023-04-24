@@ -8,5 +8,5 @@ CREATE TABLE chats (
 
 --changeset webapp:3
 ALTER TABLE links
-    ADD FOREIGN KEY (id_chat) REFERENCES chats (id)
+    ADD FOREIGN KEY (id_chat) REFERENCES chats (chat_number)
     ON DELETE CASCADE

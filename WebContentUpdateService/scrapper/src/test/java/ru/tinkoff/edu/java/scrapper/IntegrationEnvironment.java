@@ -1,3 +1,5 @@
+package ru.tinkoff.edu.java.scrapper;
+
 import liquibase.Contexts;
 import liquibase.Liquibase;
 import liquibase.database.Database;

@@ -3,6 +3,7 @@ package ru.tinkoff.edu.java.scrapper.configuration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.tinkoff.edu.java.scrapper.clients.BotClient;
 import ru.tinkoff.edu.java.scrapper.clients.GitHubClient;
 import ru.tinkoff.edu.java.scrapper.clients.StackOverflowClient;
 
@@ -19,6 +20,13 @@ public class ClientConfiguration {
     public StackOverflowClient stackOverflowClient(
             @Value("${stackoverflow.api.base-url:#{'${stackoverflow.api.default-base-url}'}}") String stackOverflowBaseUrl) {
         return new StackOverflowClient(stackOverflowBaseUrl);
+    }
+
+    @Bean
+    public BotClient scrapperClient(
+            @Value("${bot.api.base-url:#{'${bot.api.default-base-url}'}}")
+            String scrapperBaseUrl) {
+        return new BotClient(scrapperBaseUrl);
     }
 
 
