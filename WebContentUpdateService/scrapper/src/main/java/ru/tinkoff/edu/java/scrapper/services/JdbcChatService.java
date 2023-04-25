@@ -1,12 +1,11 @@
 package ru.tinkoff.edu.java.scrapper.services;
 
-import org.springframework.stereotype.Service;
-import ru.tinkoff.edu.java.scrapper.dto.ChatEntity;
+import ru.tinkoff.edu.java.scrapper.dto.ChatDto;
 import ru.tinkoff.edu.java.scrapper.repositories.JdbcChatsRepository;
 
 import java.util.List;
 
-@Service
+
 public class JdbcChatService implements ChatService {
     private final JdbcChatsRepository jdbcChatsRepository;
 
@@ -25,7 +24,7 @@ public class JdbcChatService implements ChatService {
     }
 
     @Override
-    public List<ChatEntity> findAll() {
+    public List<ChatDto> findAll() {
         return jdbcChatsRepository.findAll();
 }
 }

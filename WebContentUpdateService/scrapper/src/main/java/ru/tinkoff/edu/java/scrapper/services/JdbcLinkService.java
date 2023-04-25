@@ -1,13 +1,12 @@
 package ru.tinkoff.edu.java.scrapper.services;
 
-import org.springframework.stereotype.Service;
-import ru.tinkoff.edu.java.scrapper.dto.LinkEntity;
+import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
 import ru.tinkoff.edu.java.scrapper.repositories.JdbcLinksRepository;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Service
+
 public class JdbcLinkService implements LinkService {
     private final JdbcLinksRepository jdbcLinksRepository;
 
@@ -26,12 +25,12 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
-    public List<LinkEntity> findAll(Long chatId) {
+    public List<LinkDto> findAll(Long chatId) {
         return jdbcLinksRepository.findAll(chatId);
     }
 
     @Override
-    public List<LinkEntity> findAllOutdatedLinks(OffsetDateTime dateTime) {
+    public List<LinkDto> findAllOutdatedLinks(OffsetDateTime dateTime) {
         return jdbcLinksRepository.findAllOutdatedLinks(dateTime);
     }
 }

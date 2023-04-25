@@ -1,10 +1,11 @@
 package ru.tinkoff.edu.java.scrapper.services;
 
-import ru.tinkoff.edu.java.scrapper.dto.ChatEntity;
-import ru.tinkoff.edu.java.scrapper.repositories.JdbcChatsRepository;
+import org.springframework.stereotype.Service;
+import ru.tinkoff.edu.java.scrapper.dto.ChatDto;
 import ru.tinkoff.edu.java.scrapper.repositories.JooqChatsRepository;
 
 import java.util.List;
+
 
 public class JooqChatService implements ChatService{
 
@@ -25,7 +26,7 @@ public class JooqChatService implements ChatService{
     }
 
     @Override
-    public List<ChatEntity> findAll() {
+    public List<ChatDto> findAll() {
         return jooqChatsRepository.findAll();
     }
 }

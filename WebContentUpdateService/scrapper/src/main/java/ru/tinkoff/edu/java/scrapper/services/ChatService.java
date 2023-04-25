@@ -1,6 +1,6 @@
 package ru.tinkoff.edu.java.scrapper.services;
 
-import ru.tinkoff.edu.java.scrapper.dto.ChatEntity;
+import ru.tinkoff.edu.java.scrapper.dto.ChatDto;
 
 import java.util.List;
 
@@ -9,5 +9,5 @@ public interface ChatService {
 
     void remove(Long chatNumber);
 
-    List<ChatEntity> findAll();
+    List<ChatDto> findAll();
 }

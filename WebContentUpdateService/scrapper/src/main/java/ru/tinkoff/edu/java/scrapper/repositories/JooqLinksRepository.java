@@ -9,12 +9,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tinkoff.edu.java.scrapper.domain.jooq.tables.Links;
-import ru.tinkoff.edu.java.scrapper.dto.LinkEntity;
+import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
 import java.time.OffsetDateTime;
 import java.util.List;
-import static ru.tinkoff.edu.java.scrapper.domain.jooq.Tables.LINKS;
 
-@Repository
+
 public class JooqLinksRepository {
     private final DSLContext dslContext;
     private static final Logger LOGGER = LoggerFactory.getLogger(JdbcTemplate.class);
@@ -46,11 +45,11 @@ public class JooqLinksRepository {
     }
 
     @Transactional
-    public List<LinkEntity> findAll(Long chatId) {
+    public List<LinkDto> findAll(Long chatId) {
         return dslContext.selectFrom(Links.LINKS)
                 .where(Links.LINKS.ID_CHAT.eq(chatId.intValue()))
                 .fetch()
-                .map(record -> new LinkEntity(
+                .map(record -> new LinkDto(
                         record.getId(),
                         record.getUrl(),
                         record.getLastUpdateDate(),
@@ -59,11 +58,11 @@ public class JooqLinksRepository {
     }
 
     @Transactional
-    public List<LinkEntity> findAllOutdatedLinks(OffsetDateTime dateTime) {
-        return dslContext.selectFrom(LINKS)
-                .where(LINKS.LAST_UPDATE_DATE.lt(dateTime))
+    public List<LinkDto> findAllOutdatedLinks(OffsetDateTime dateTime) {
+        return dslContext.selectFrom(Links.LINKS)
+                //.where(Links.LINKS.LAST_UPDATE_DATE.lt(dateTime))
                 .fetch()
-                .map(record -> new LinkEntity(
+                .map(record -> new LinkDto(
                         record.getId(),
                         record.getUrl(),
                         record.getLastUpdateDate(),

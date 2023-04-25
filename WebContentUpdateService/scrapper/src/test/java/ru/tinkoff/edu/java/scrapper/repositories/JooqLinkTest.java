@@ -11,7 +11,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tinkoff.edu.java.scrapper.IntegrationEnvironment;
 import ru.tinkoff.edu.java.scrapper.ScrapperApplication;
-import ru.tinkoff.edu.java.scrapper.dto.LinkEntity;
+import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -45,7 +45,7 @@ public class JooqLinkTest extends IntegrationEnvironment {
         OffsetDateTime lastUpdateDate = OffsetDateTime.now(ZoneOffset.UTC);
         jooqLinksRepository.add(url, lastUpdateDate, chatNumber);
 
-        List<LinkEntity> links = jooqLinksRepository.findAll(chatNumber);
+        List<LinkDto> links = jooqLinksRepository.findAll(chatNumber);
         assertEquals(1, links.size());
         assertEquals(url, links.get(0).getUrl());
         assertEquals(chatNumber, links.get(0).getChatNumber());
@@ -86,7 +86,7 @@ public class JooqLinkTest extends IntegrationEnvironment {
         jooqLinksRepository.add(url, lastUpdateDate, chatNumber);
 
         jooqLinksRepository.remove(url, chatNumber);
-        List<LinkEntity> links = jooqLinksRepository.findAll(chatNumber);
+        List<LinkDto> links = jooqLinksRepository.findAll(chatNumber);
         assertTrue(links.isEmpty());
     }
 
@@ -104,7 +104,7 @@ public class JooqLinkTest extends IntegrationEnvironment {
         jooqLinksRepository.add(url1, lastUpdateDate, chatNumber);
         jooqLinksRepository.add(url2, lastUpdateDate, chatNumber);
 
-        List<LinkEntity> links = jooqLinksRepository.findAll(chatNumber);
+        List<LinkDto> links = jooqLinksRepository.findAll(chatNumber);
         assertEquals(2, links.size());
     }
 }

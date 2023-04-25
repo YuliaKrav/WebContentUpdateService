@@ -12,7 +12,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tinkoff.edu.java.scrapper.IntegrationEnvironment;
 import ru.tinkoff.edu.java.scrapper.ScrapperApplication;
-import ru.tinkoff.edu.java.scrapper.dto.LinkEntity;
+import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -50,7 +50,7 @@ public class JdbcLinkTest extends IntegrationEnvironment {
         OffsetDateTime lastUpdateDate = OffsetDateTime.now(ZoneOffset.UTC);
         jdbcLinksRepository.add(url, lastUpdateDate, chatNumber);
 
-        List<LinkEntity> links = jdbcLinksRepository.findAll(chatNumber);
+        List<LinkDto> links = jdbcLinksRepository.findAll(chatNumber);
         assertEquals(1, links.size());
         assertEquals(url, links.get(0).getUrl());
         assertEquals(chatNumber, links.get(0).getChatNumber());
@@ -91,7 +91,7 @@ public class JdbcLinkTest extends IntegrationEnvironment {
         jdbcLinksRepository.add(url, lastUpdateDate, chatNumber);
 
         jdbcLinksRepository.remove(url, chatNumber);
-        List<LinkEntity> links = jdbcLinksRepository.findAll(chatNumber);
+        List<LinkDto> links = jdbcLinksRepository.findAll(chatNumber);
         assertTrue(links.isEmpty());
     }
 
@@ -109,7 +109,7 @@ public class JdbcLinkTest extends IntegrationEnvironment {
         jdbcLinksRepository.add(url1, lastUpdateDate, chatNumber);
         jdbcLinksRepository.add(url2, lastUpdateDate, chatNumber);
 
-        List<LinkEntity> links = jdbcLinksRepository.findAll(chatNumber);
+        List<LinkDto> links = jdbcLinksRepository.findAll(chatNumber);
         assertEquals(2, links.size());
     }
 }

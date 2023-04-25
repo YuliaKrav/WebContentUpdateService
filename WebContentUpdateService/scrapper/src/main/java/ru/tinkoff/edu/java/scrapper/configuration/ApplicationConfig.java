@@ -7,5 +7,5 @@ import ru.tinkoff.edu.java.scrapper.scheduler.Scheduler;
 
 @Validated
 @ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
-public record ApplicationConfig(@NotNull String test, Scheduler scheduler) {
+public record ApplicationConfig(@NotNull String test, Scheduler scheduler, AccessType databaseAccessType) {
 }

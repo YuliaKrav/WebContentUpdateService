@@ -6,11 +6,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tinkoff.edu.java.scrapper.domain.jooq.tables.Chats;
 import ru.tinkoff.edu.java.scrapper.domain.jooq.tables.records.ChatsRecord;
-import ru.tinkoff.edu.java.scrapper.dto.ChatEntity;
+import ru.tinkoff.edu.java.scrapper.dto.ChatDto;
 
 import java.util.List;
 
-@Repository
+
 public class JooqChatsRepository {
     private final DSLContext dslContext;
 
@@ -35,9 +35,9 @@ public class JooqChatsRepository {
     }
 
     @Transactional
-    public List<ChatEntity> findAll() {
+    public List<ChatDto> findAll() {
         return dslContext.selectFrom(Chats.CHATS)
                 .fetch()
-                .map(record -> new ChatEntity(record.getChatNumber().longValue(), record.getUserName()));
+                .map(record -> new ChatDto(record.getChatNumber().longValue(), record.getUserName()));
     }
 }

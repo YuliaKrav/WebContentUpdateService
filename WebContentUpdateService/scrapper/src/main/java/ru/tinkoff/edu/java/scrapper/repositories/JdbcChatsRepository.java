@@ -4,11 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import ru.tinkoff.edu.java.scrapper.dto.ChatEntity;
+import ru.tinkoff.edu.java.scrapper.dto.ChatDto;
 
 import java.util.List;
 
-@Repository
+
 public class JdbcChatsRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -31,9 +31,9 @@ public class JdbcChatsRepository {
     }
 
     @Transactional
-    public List<ChatEntity> findAll() {
+    public List<ChatDto> findAll() {
         String sql = "SELECT chat_number, user_name FROM public.chats";
         return jdbcTemplate.query(sql,
-                (rs, rowNum) -> new ChatEntity(rs.getLong(1), rs.getString(2)));
+                (rs, rowNum) -> new ChatDto(rs.getLong(1), rs.getString(2)));
     }
 }

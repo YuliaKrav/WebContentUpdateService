@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import ru.tinkoff.edu.java.scrapper.clients.*;
-import ru.tinkoff.edu.java.scrapper.dto.ChatEntity;
-import ru.tinkoff.edu.java.scrapper.dto.LinkEntity;
+import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
 import ru.tinkoff.edu.java.scrapper.dto.LinkUpdateRequest;
 import ru.tinkoff.edu.java.scrapper.services.ChatService;
 import ru.tinkoff.edu.java.scrapper.services.LinkService;
@@ -45,11 +44,11 @@ public class LinkUpdaterScheduler {
         LOGGER.info("Link update started...");
 
         OffsetDateTime outdatedTime = OffsetDateTime.now().minus(Duration.parse(linkUpdateInterval));
-        List<LinkEntity> outdatedLinksList = linkService.findAllOutdatedLinks(outdatedTime);
+        List<LinkDto> outdatedLinksList = linkService.findAllOutdatedLinks(outdatedTime);
 
         LOGGER.info(outdatedTime.toString());
-        for (LinkEntity linkEntity : outdatedLinksList) {
-            String url = linkEntity.getUrl();
+        for (LinkDto linkDTO : outdatedLinksList) {
+            String url = linkDTO.getUrl();
             boolean isUpdated = false;
 
             if (url.contains("github.com")) {
@@ -74,10 +73,10 @@ public class LinkUpdaterScheduler {
 
             if (isUpdated) {
                 List<Long> tgChatsId = new ArrayList<>();
-                tgChatsId.add(linkEntity.getChatNumber());
+                tgChatsId.add(linkDTO.getChatNumber());
                 LinkUpdateRequest linkUpdateRequest =
                         new LinkUpdateRequest(
-                                linkEntity.getId(),
+                                linkDTO.getId(),
                                 url,
                                 "updated",
                                 tgChatsId);
