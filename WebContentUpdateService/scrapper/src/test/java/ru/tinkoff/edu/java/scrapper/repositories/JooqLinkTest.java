@@ -5,7 +5,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -28,15 +27,11 @@ import static org.junit.Assert.*;
         "spring.datasource.password=userDB_123",
         "spring.liquibase.enabled=false"
 })
-
-public class JdbcLinkTest extends IntegrationEnvironment {
+public class JooqLinkTest extends IntegrationEnvironment {
     @Autowired
-    private JdbcLinksRepository jdbcLinksRepository;
+    private JooqLinksRepository jooqLinksRepository;
     @Autowired
-    private JdbcChatsRepository jdbcChatsRepository;
-
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
+    private JooqChatsRepository jooqChatsRepository;
 
     @Test
     @Transactional
@@ -44,13 +39,13 @@ public class JdbcLinkTest extends IntegrationEnvironment {
     public void addTest() {
         Long chatNumber = 7L;
         String userName = "user";
-        jdbcChatsRepository.add(chatNumber, userName);
+        jooqChatsRepository.add(chatNumber, userName);
 
         String url = "https://www.testurl.com";
         OffsetDateTime lastUpdateDate = OffsetDateTime.now(ZoneOffset.UTC);
-        jdbcLinksRepository.add(url, lastUpdateDate, chatNumber);
+        jooqLinksRepository.add(url, lastUpdateDate, chatNumber);
 
-        List<LinkEntity> links = jdbcLinksRepository.findAll(chatNumber);
+        List<LinkEntity> links = jooqLinksRepository.findAll(chatNumber);
         assertEquals(1, links.size());
         assertEquals(url, links.get(0).getUrl());
         assertEquals(chatNumber, links.get(0).getChatNumber());
@@ -64,14 +59,14 @@ public class JdbcLinkTest extends IntegrationEnvironment {
     public void addDuplicateTest() {
         Long chatNumber = 7L;
         String userName = "user";
-        jdbcChatsRepository.add(chatNumber, userName);
+        jooqChatsRepository.add(chatNumber, userName);
 
         String url = "https://www.testurl.com";
         OffsetDateTime lastUpdateDate = OffsetDateTime.now(ZoneOffset.UTC);
-        jdbcLinksRepository.add(url, lastUpdateDate, chatNumber);
+        jooqLinksRepository.add(url, lastUpdateDate, chatNumber);
 
         try {
-            jdbcLinksRepository.add(url, lastUpdateDate, chatNumber);
+            jooqLinksRepository.add(url, lastUpdateDate, chatNumber);
             fail("Expected a DataIntegrityViolationException to be thrown");
         } catch (Exception ex) {
             assertTrue(ex instanceof DataIntegrityViolationException);
@@ -84,14 +79,14 @@ public class JdbcLinkTest extends IntegrationEnvironment {
     public void removeTest() {
         Long chatNumber = 7L;
         String userName = "user";
-        jdbcChatsRepository.add(chatNumber, userName);
+        jooqChatsRepository.add(chatNumber, userName);
 
         String url = "https://www.testurl.com";
         OffsetDateTime lastUpdateDate = OffsetDateTime.now();
-        jdbcLinksRepository.add(url, lastUpdateDate, chatNumber);
+        jooqLinksRepository.add(url, lastUpdateDate, chatNumber);
 
-        jdbcLinksRepository.remove(url, chatNumber);
-        List<LinkEntity> links = jdbcLinksRepository.findAll(chatNumber);
+        jooqLinksRepository.remove(url, chatNumber);
+        List<LinkEntity> links = jooqLinksRepository.findAll(chatNumber);
         assertTrue(links.isEmpty());
     }
 
@@ -101,15 +96,15 @@ public class JdbcLinkTest extends IntegrationEnvironment {
     public void findAllTest() {
         Long chatNumber = 7L;
         String userName = "user";
-        jdbcChatsRepository.add(chatNumber, userName);
+        jooqChatsRepository.add(chatNumber, userName);
 
         String url1 = "https://www.testurl.com/1";
         String url2 = "https://www.testurl.com/2";
         OffsetDateTime lastUpdateDate = OffsetDateTime.now();
-        jdbcLinksRepository.add(url1, lastUpdateDate, chatNumber);
-        jdbcLinksRepository.add(url2, lastUpdateDate, chatNumber);
+        jooqLinksRepository.add(url1, lastUpdateDate, chatNumber);
+        jooqLinksRepository.add(url2, lastUpdateDate, chatNumber);
 
-        List<LinkEntity> links = jdbcLinksRepository.findAll(chatNumber);
+        List<LinkEntity> links = jooqLinksRepository.findAll(chatNumber);
         assertEquals(2, links.size());
     }
 }

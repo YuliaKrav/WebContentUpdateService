@@ -9,12 +9,12 @@ import ru.tinkoff.edu.java.scrapper.dto.ChatEntity;
 import java.util.List;
 
 @Repository
-public class ChatsRepository {
+public class JdbcChatsRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public ChatsRepository(JdbcTemplate jdbcTemplate) {
+    public JdbcChatsRepository(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

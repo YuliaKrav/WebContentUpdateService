@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 @Component
 public class TelegramBotService extends TelegramLongPollingBot implements BotCommands {
-
+    //TODO вынести команды в enum с текстовым описанием
     private final String botToken;
     private final String botName;
     final HashMap<User, List<String>> userToLinkStorage = new HashMap<>();
