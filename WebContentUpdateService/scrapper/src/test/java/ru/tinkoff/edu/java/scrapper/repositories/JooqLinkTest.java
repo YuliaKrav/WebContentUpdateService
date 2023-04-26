@@ -65,12 +65,7 @@ public class JooqLinkTest extends IntegrationEnvironment {
         OffsetDateTime lastUpdateDate = OffsetDateTime.now(ZoneOffset.UTC);
         jooqLinksRepository.add(url, lastUpdateDate, chatNumber);
 
-        try {
-            jooqLinksRepository.add(url, lastUpdateDate, chatNumber);
-            fail("Expected a DataIntegrityViolationException to be thrown");
-        } catch (Exception ex) {
-            assertTrue(ex instanceof DataIntegrityViolationException);
-        }
+        assertThrows(DataIntegrityViolationException.class, () -> jooqLinksRepository.add(url, lastUpdateDate, chatNumber));
     }
 
     @Test
@@ -106,5 +101,31 @@ public class JooqLinkTest extends IntegrationEnvironment {
 
         List<LinkDto> links = jooqLinksRepository.findAll(chatNumber);
         assertEquals(2, links.size());
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void findAllOutdatedLinksTest() {
+        Long chatNumber = 7L;
+        String userName = "user";
+        jooqChatsRepository.add(chatNumber, userName);
+
+        String url1 = "https://www.testurl.com/1";
+        String url2 = "https://www.testurl.com/2";
+        OffsetDateTime lastUpdateDate1 = OffsetDateTime.now(ZoneOffset.UTC).minusDays(1); // outdated
+        OffsetDateTime lastUpdateDate2 = OffsetDateTime.now(ZoneOffset.UTC).minusMinutes(3); // actual
+
+        jooqLinksRepository.add(url1, lastUpdateDate1, chatNumber);
+        jooqLinksRepository.add(url2, lastUpdateDate2, chatNumber);
+
+        List<LinkDto> outdatedLinks = jooqLinksRepository.findAllOutdatedLinks(OffsetDateTime.now(ZoneOffset.UTC).minusMinutes(10));
+
+        for (LinkDto linkDto : outdatedLinks) {
+            System.out.println("Outdated link: " + linkDto.getUrl());
+        }
+        assertEquals(1, outdatedLinks.size());
+        assertEquals(url1, outdatedLinks.get(0).getUrl());
+        assertEquals(chatNumber, outdatedLinks.get(0).getChatNumber());
     }
 }

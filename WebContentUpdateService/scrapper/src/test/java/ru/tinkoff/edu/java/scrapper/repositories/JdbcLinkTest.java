@@ -70,12 +70,7 @@ public class JdbcLinkTest extends IntegrationEnvironment {
         OffsetDateTime lastUpdateDate = OffsetDateTime.now(ZoneOffset.UTC);
         jdbcLinksRepository.add(url, lastUpdateDate, chatNumber);
 
-        try {
-            jdbcLinksRepository.add(url, lastUpdateDate, chatNumber);
-            fail("Expected a DataIntegrityViolationException to be thrown");
-        } catch (Exception ex) {
-            assertTrue(ex instanceof DataIntegrityViolationException);
-        }
+        assertThrows(DataIntegrityViolationException.class, () -> jdbcLinksRepository.add(url, lastUpdateDate, chatNumber));
     }
 
     @Test
@@ -109,7 +104,37 @@ public class JdbcLinkTest extends IntegrationEnvironment {
         jdbcLinksRepository.add(url1, lastUpdateDate, chatNumber);
         jdbcLinksRepository.add(url2, lastUpdateDate, chatNumber);
 
+        Long chatNumber2 = 9L;
+        jdbcChatsRepository.add(chatNumber2, userName);
+        jdbcLinksRepository.add(url1, lastUpdateDate, chatNumber2);
+
         List<LinkDto> links = jdbcLinksRepository.findAll(chatNumber);
         assertEquals(2, links.size());
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void findAllOutdatedLinksTest() {
+        Long chatNumber = 7L;
+        String userName = "user";
+        jdbcChatsRepository.add(chatNumber, userName);
+
+        String url1 = "https://www.testurl.com/1";
+        String url2 = "https://www.testurl.com/2";
+        OffsetDateTime lastUpdateDate1 = OffsetDateTime.now(ZoneOffset.UTC).minusDays(1); // outdated
+        OffsetDateTime lastUpdateDate2 = OffsetDateTime.now(ZoneOffset.UTC).minusMinutes(3); // actual
+
+        jdbcLinksRepository.add(url1, lastUpdateDate1, chatNumber);
+        jdbcLinksRepository.add(url2, lastUpdateDate2, chatNumber);
+
+        List<LinkDto> outdatedLinks = jdbcLinksRepository.findAllOutdatedLinks(OffsetDateTime.now(ZoneOffset.UTC).minusMinutes(10));
+
+        for (LinkDto linkDto : outdatedLinks) {
+            System.out.println("Outdated link: " + linkDto.getUrl());
+        }
+        assertEquals(1, outdatedLinks.size());
+        assertEquals(url1, outdatedLinks.get(0).getUrl());
+        assertEquals(chatNumber, outdatedLinks.get(0).getChatNumber());
     }
 }

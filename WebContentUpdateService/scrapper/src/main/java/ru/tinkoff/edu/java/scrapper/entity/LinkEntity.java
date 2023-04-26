@@ -17,12 +17,13 @@ import java.time.OffsetDateTime;
 @Table(name = "links")
 public class LinkEntity {
     @Id
-    @GeneratedValue
+    //@GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
     @Column(name = "url")
     private String url;
-    @Column(name="last_update_date")
+    @Column(name = "last_update_date")
     private OffsetDateTime lastUpdateDate;
     @ManyToOne(optional = false)
     @JoinColumn(name = "id_chat")
