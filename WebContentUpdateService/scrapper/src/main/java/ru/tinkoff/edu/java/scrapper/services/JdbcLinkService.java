@@ -26,6 +26,11 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
+    public void updateLastUpdateDate(String url, Long chatNumber, OffsetDateTime lastUpdateDate) {
+        jdbcLinksRepository.updateLastUpdateDate(url, chatNumber, lastUpdateDate);
+    }
+
+    @Override
     public List<Long> findAllChatsIdByUrl(String url) {
         return jdbcLinksRepository.findAllChatsIdByUrl(url);
     }

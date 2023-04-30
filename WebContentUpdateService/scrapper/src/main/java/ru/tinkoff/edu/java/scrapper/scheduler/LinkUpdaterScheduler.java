@@ -47,7 +47,8 @@ public class LinkUpdaterScheduler {
     public void update() {
         LOGGER.info("Link update started...");
 
-        OffsetDateTime outdatedTime = OffsetDateTime.now().minus(Duration.parse(linkUpdateInterval));
+        OffsetDateTime currentTime = OffsetDateTime.now();
+        OffsetDateTime outdatedTime = currentTime.minus(Duration.parse(linkUpdateInterval));
         List<LinkDto> outdatedLinksList = linkService.findAllOutdatedLinks(outdatedTime);
         LinkProcessingChain linkProcessingChain = new LinkProcessingChain();
 
@@ -80,6 +81,11 @@ public class LinkUpdaterScheduler {
 
             if (isUpdated) {
                 List<Long> tgChatsId = linkService.findAllChatsIdByUrl(url);
+
+                for (Long tgChatId : tgChatsId) {
+                    linkService.updateLastUpdateDate(url, tgChatId, currentTime);
+                }
+
                 LinkUpdateRequest linkUpdateRequest =
                         new LinkUpdateRequest(
                                 linkDTO.getId(),

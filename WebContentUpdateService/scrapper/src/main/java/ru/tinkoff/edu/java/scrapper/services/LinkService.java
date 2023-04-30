@@ -12,6 +12,8 @@ public interface LinkService {
     void add(String url, Long chatNumber);
     void remove(String url, Long chatNumber);
 
+    void updateLastUpdateDate(String url, Long chatNumber, OffsetDateTime lastUpdateDate);
+
     List<Long> findAllChatsIdByUrl(String url);
     List<LinkDto> findAll();
     ListLinksResponse findAll(Long chatId);

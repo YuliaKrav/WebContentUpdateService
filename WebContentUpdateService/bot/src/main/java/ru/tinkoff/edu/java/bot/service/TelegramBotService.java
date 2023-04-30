@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 @Component
 public class TelegramBotService extends TelegramLongPollingBot implements BotCommands {
     //TODO вынести команды в enum с текстовым описанием
-    private final Long CHAT_ID = 743034562L;
     private final Set<Long> allChatsId;
     private final String botToken;
     private final String botName;
@@ -79,7 +78,13 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
     }
 
     public void sendNotificationToUser(LinkUpdateRequest linkUpdateRequest) {
-        sendText(CHAT_ID, linkUpdateRequest.toString());
+        String message =
+                String.format("Произошли изменения по ссылке '%s': %s",
+                        linkUpdateRequest.getUrl(),
+                        linkUpdateRequest.getDescription());
+        for (Long tgChatId : linkUpdateRequest.getTgChatIds()) {
+            sendText(tgChatId, message);
+        }
     }
 
     private void botAnswerUtils(String receivedMessage, Message message) {
@@ -143,9 +148,7 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
     private String getAllLinksStringFromResponse(ListLinksResponse listLinksResponse) {
         return listLinksResponse.links().size() == 0
                 ? EMPTY_LIST
-                : listLinksResponse.links().stream()
-                .map(LinkResponse::getUrl)
-                .collect(Collectors.joining("\n"));
+                : listLinksResponse.links().stream().map(LinkResponse::getUrl).collect(Collectors.joining("\n"));
     }
 
     void trackLink(Message message, String link) {

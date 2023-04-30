@@ -45,6 +45,15 @@ public class JooqLinksRepository {
     }
 
     @Transactional
+    public void updateLastUpdateDate(String url, Long chatNumber, OffsetDateTime lastUpdateDate) {
+        dslContext.update(Links.LINKS)
+                .set(Links.LINKS.LAST_UPDATE_DATE, lastUpdateDate)
+                .where(Links.LINKS.URL.eq(url))
+                .and(Links.LINKS.ID_CHAT.eq(chatNumber.intValue()))
+                .execute();
+    }
+
+    @Transactional
     public List<LinkDto> findAll(Long chatId) {
         return dslContext.selectFrom(Links.LINKS)
                 .where(Links.LINKS.ID_CHAT.eq(chatId.intValue()))

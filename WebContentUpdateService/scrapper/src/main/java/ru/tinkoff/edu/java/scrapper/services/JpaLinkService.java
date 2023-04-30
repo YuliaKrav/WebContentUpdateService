@@ -40,6 +40,11 @@ public class JpaLinkService implements LinkService {
     }
 
     @Override
+    public void updateLastUpdateDate(String url, Long chatNumber, OffsetDateTime lastUpdateDate) {
+        jpaLinksRepository.updateLastUpdateDate(url, chatNumber, lastUpdateDate);
+    }
+
+    @Override
     public List<Long> findAllChatsIdByUrl(String url) {
         return jpaLinksRepository.findAllByUrl(url)
                 .stream()

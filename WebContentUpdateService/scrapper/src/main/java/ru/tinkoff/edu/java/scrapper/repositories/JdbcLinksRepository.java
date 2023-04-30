@@ -37,6 +37,11 @@ public class JdbcLinksRepository {
         String sql = "DELETE FROM public.links WHERE url = ? AND id_chat = ?";
         jdbcTemplate.update(sql, url, chatNumber);
     }
+    @Transactional
+    public void updateLastUpdateDate(String url, Long chatNumber, OffsetDateTime lastUpdateDate) {
+        String sql = "UPDATE public.links SET last_update_date = ? WHERE url = ? AND id_chat = ?";
+        jdbcTemplate.update(sql, lastUpdateDate, url, chatNumber);
+    }
 
     public List<LinkDto> findAll() {
         String sql = "SELECT id, url, last_update_date, id_chat FROM public.links";
