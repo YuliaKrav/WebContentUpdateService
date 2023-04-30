@@ -6,6 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import parser.LinkProcessingChain;
+import parser.replies.GitHubReply;
+import parser.replies.LinkParserReplies;
+import parser.replies.StackOverflowReply;
 import ru.tinkoff.edu.java.scrapper.clients.*;
 import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
 import ru.tinkoff.edu.java.scrapper.dto.LinkUpdateRequest;
@@ -14,12 +18,12 @@ import ru.tinkoff.edu.java.scrapper.services.LinkService;
 
 import java.time.Duration;
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
 public class LinkUpdaterScheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkUpdaterScheduler.class);
+
 
     @Autowired
     private LinkService linkService;
@@ -45,35 +49,37 @@ public class LinkUpdaterScheduler {
 
         OffsetDateTime outdatedTime = OffsetDateTime.now().minus(Duration.parse(linkUpdateInterval));
         List<LinkDto> outdatedLinksList = linkService.findAllOutdatedLinks(outdatedTime);
+        LinkProcessingChain linkProcessingChain = new LinkProcessingChain();
 
         LOGGER.info(outdatedTime.toString());
         for (LinkDto linkDTO : outdatedLinksList) {
             String url = linkDTO.getUrl();
             boolean isUpdated = false;
+            LinkParserReplies urlType = linkProcessingChain.process(url);
 
-            if (url.contains("github.com")) {
-                String[] splitUrl = url.split("/");
-                String user = splitUrl[3];
-                String repo = splitUrl[4];
-                GitHubRepoResponse response = gitHubClient.fetchRepoUpdates(user, repo);
-                if (response.createdAt().isAfter(outdatedTime)) {
-                    isUpdated = true;
-                }
-            } else if (url.contains("stackoverflow.com")) {
-                String[] splitUrl = url.split("/");
-                Long questionId = Long.parseLong(splitUrl[4]);
-                StackOverflowQuestionResponse response = stackOverflowClient.fetchQuestionUpdates(questionId);
-                for (StackOverflowQuestionResponse.Item item : response.items()) {
-                    if (item.lastActivityDate().isAfter(outdatedTime)) {
+            switch (urlType) {
+                case GitHubReply gitHubReply -> {
+                    GitHubRepoResponse response = gitHubClient
+                            .fetchRepoUpdates(gitHubReply.user(), gitHubReply.repository());
+                    if (response.createdAt().isAfter(outdatedTime)) {
                         isUpdated = true;
-                        break;
                     }
                 }
+                case StackOverflowReply stackOverflowReply -> {
+                    StackOverflowQuestionResponse response =
+                            stackOverflowClient.fetchQuestionUpdates(Long.parseLong(stackOverflowReply.idRequest()));
+                    for (StackOverflowQuestionResponse.Item item : response.items()) {
+                        if (item.lastActivityDate().isAfter(outdatedTime)) {
+                            isUpdated = true;
+                            break;
+                        }
+                    }
+                }
+                default -> LOGGER.info("Unsupported url type: " + urlType.getClass().getSimpleName());
             }
 
             if (isUpdated) {
-                List<Long> tgChatsId = new ArrayList<>();
-                tgChatsId.add(linkDTO.getChatNumber());
+                List<Long> tgChatsId = linkService.findAllChatsIdByUrl(url);
                 LinkUpdateRequest linkUpdateRequest =
                         new LinkUpdateRequest(
                                 linkDTO.getId(),

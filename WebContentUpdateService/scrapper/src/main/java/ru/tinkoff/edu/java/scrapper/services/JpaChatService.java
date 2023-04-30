@@ -1,6 +1,5 @@
 package ru.tinkoff.edu.java.scrapper.services;
 
-import org.springframework.stereotype.Service;
 import ru.tinkoff.edu.java.scrapper.dto.ChatDto;
 import ru.tinkoff.edu.java.scrapper.entity.ChatEntity;
 import ru.tinkoff.edu.java.scrapper.repositories.JpaChatsRepository;
@@ -34,5 +33,13 @@ public class JpaChatService implements ChatService {
                 .stream()
                 .map(entity -> new ChatDto(entity.getChatNumber(), entity.getUserName()))
                 .collect(Collectors.toList());
+    }
+
+    public ChatDto findByChatNumber(Long chatNumber) { // for JPA test
+        ChatEntity entity = jpaChatsRepository.findByChatNumber(chatNumber);
+        if (entity == null) {
+            return null;
+        }
+        return new ChatDto(entity.getChatNumber(), entity.getUserName());
     }
 }

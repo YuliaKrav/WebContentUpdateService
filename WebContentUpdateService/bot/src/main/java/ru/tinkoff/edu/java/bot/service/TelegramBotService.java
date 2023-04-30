@@ -1,7 +1,6 @@
 package ru.tinkoff.edu.java.bot.service;
 
 
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -12,26 +11,34 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.tinkoff.edu.java.bot.clients.ListLinksResponse;
+import ru.tinkoff.edu.java.bot.clients.ScrapperClient;
 import ru.tinkoff.edu.java.bot.components.BotButtons;
 import ru.tinkoff.edu.java.bot.components.BotCommands;
 import ru.tinkoff.edu.java.bot.configuration.TelegramBotConfiguration;
+import ru.tinkoff.edu.java.bot.dto.LinkUpdateRequest;
+import ru.tinkoff.edu.java.scrapper.dto.LinkResponse;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-@NoArgsConstructor(force = true)
+//@NoArgsConstructor(force = true) //for TelegramBotServiceTest
 @Slf4j
 @Component
 public class TelegramBotService extends TelegramLongPollingBot implements BotCommands {
     //TODO вынести команды в enum с текстовым описанием
+    private final Long CHAT_ID = 743034562L;
+    private final Set<Long> allChatsId;
     private final String botToken;
     private final String botName;
-    final HashMap<User, List<String>> userToLinkStorage = new HashMap<>();
 
-    public TelegramBotService(TelegramBotConfiguration config) {
+    private final ScrapperClient scrapperClient;
+
+    public TelegramBotService(TelegramBotConfiguration config, ScrapperClient scrapperClient) {
         this.botToken = config.getToken();
         this.botName = config.getName();
+        this.scrapperClient = scrapperClient;
+        this.allChatsId = new HashSet<>();
 
         try {
             this.execute(new SetMyCommands(LIST_OF_COMMANDS, new BotCommandScopeDefault(), null));
@@ -40,17 +47,13 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
         }
     }
 
-    public List<String> getLinksList(User user) {
-        return userToLinkStorage.getOrDefault(user, new ArrayList<>());
-    }
-
     @Override
     public void onUpdateReceived(Update update) {
-        long chatId = 0;
+        //long chatId = 0;
         String receivedMessage;
 
         if (update.hasMessage()) {
-            chatId = update.getMessage().getChatId();
+            // chatId = update.getMessage().getChatId();
 
             if (update.getMessage().hasText()) { //text message
                 receivedMessage = update.getMessage().getText();
@@ -58,7 +61,7 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
             }
 
         } else if (update.hasCallbackQuery()) { //button click
-            chatId = update.getCallbackQuery().getMessage().getChatId();
+            // chatId = update.getCallbackQuery().getMessage().getChatId();
             receivedMessage = update.getCallbackQuery().getData();
 
             botAnswerUtils(receivedMessage, update.getCallbackQuery().getMessage());
@@ -73,6 +76,10 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
     @Override
     public String getBotToken() {
         return botToken;
+    }
+
+    public void sendNotificationToUser(LinkUpdateRequest linkUpdateRequest) {
+        sendText(CHAT_ID, linkUpdateRequest.toString());
     }
 
     private void botAnswerUtils(String receivedMessage, Message message) {
@@ -93,15 +100,15 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
     }
 
     private void startBot(long chatId, User user) {
+        scrapperClient.registerChat(chatId);
+        allChatsId.add(chatId);
         SendMessage message = new SendMessage();
-        if (!userToLinkStorage.containsKey(user)) {
-            userToLinkStorage.put(user, new ArrayList<>());
-        }
         message.setChatId(Long.toString(chatId));
-        message.setText("Привет, " + user.getFirstName() + "! Я бот, который поможет тебе отслеживать ссылки.'");
+        message.setText("Привет, " + user.getFirstName()
+                + "! Я бот, " + chatId + " который поможет тебе отслеживать ссылки.'");
         message.setReplyMarkup(BotButtons.inlineMarkup());
-
         executeMessage(message);
+        scrapperClient.registerChat(chatId);
     }
 
     void executeMessage(SendMessage message) {
@@ -121,11 +128,11 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
     }
 
     private void sendList(Message message) {
-        User user = message.getFrom();
-        if (userToLinkStorage.containsKey(user)) {
+        if (allChatsId.contains(message.getChatId())) {
+            ListLinksResponse listLinksResponse = scrapperClient.getAllLinks(message.getChatId());
             SendMessage send = new SendMessage();
             send.setChatId(Long.toString(message.getChatId()));
-            send.setText(getLinksListString(user));
+            send.setText(getAllLinksStringFromResponse(listLinksResponse));
             executeMessage(send);
         } else {
             sendText(message.getChatId(), USER_NOT_REGISTER);
@@ -133,14 +140,17 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
         }
     }
 
-    String getLinksListString(User user) {
-        List<String> links = userToLinkStorage.get(user);
-        return  links.size() == 0 ? EMPTY_LIST : String.join("\n", links);
+    private String getAllLinksStringFromResponse(ListLinksResponse listLinksResponse) {
+        return listLinksResponse.links().size() == 0
+                ? EMPTY_LIST
+                : listLinksResponse.links().stream()
+                .map(LinkResponse::getUrl)
+                .collect(Collectors.joining("\n"));
     }
 
     void trackLink(Message message, String link) {
-        if (userToLinkStorage.containsKey(message.getFrom())) {
-            userToLinkStorage.get(message.getFrom()).add(link);
+        if (allChatsId.contains(message.getChatId())) {
+            scrapperClient.addLink(message.getChatId(), link);
             sendText(message.getChatId(), String.format("Ссылка %s успешно сохранена", link));
         } else {
             sendText(message.getChatId(), USER_NOT_REGISTER);
@@ -148,8 +158,8 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
     }
 
     private void untrackLink(Message message, String link) {
-        if (userToLinkStorage.containsKey(message.getFrom())) {
-            userToLinkStorage.get(message.getFrom()).remove(link);
+        if (allChatsId.contains(message.getChatId())) {
+            scrapperClient.removeLink(message.getChatId(), link);
             sendText(message.getChatId(), String.format("Ссылка %s успешно удалена", link));
         } else {
             sendText(message.getChatId(), USER_NOT_REGISTER);

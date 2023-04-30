@@ -4,6 +4,7 @@ package ru.tinkoff.edu.java.scrapper.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.tinkoff.edu.java.scrapper.dto.AddLinkRequest;
+import ru.tinkoff.edu.java.scrapper.dto.ListLinksResponse;
 import ru.tinkoff.edu.java.scrapper.dto.RemoveLinkRequest;
 import ru.tinkoff.edu.java.scrapper.services.ChatService;
 import ru.tinkoff.edu.java.scrapper.services.LinkService;
@@ -32,9 +33,9 @@ public class ScrapperApiController {
     }
 
     @GetMapping("/links")
-    public ResponseEntity getAllLinks(@RequestHeader("Tg-Chat-Id") Long chatId) {
-        linkService.findAll(chatId);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<ListLinksResponse> getAllLinks(@RequestHeader("Tg-Chat-Id") Long chatId) {
+        ListLinksResponse listLinksResponse = linkService.findAll(chatId);
+        return ResponseEntity.ok(listLinksResponse);
     }
 
     @PostMapping("/links")

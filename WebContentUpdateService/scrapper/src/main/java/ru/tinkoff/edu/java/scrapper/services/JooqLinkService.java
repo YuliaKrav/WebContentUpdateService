@@ -1,7 +1,7 @@
 package ru.tinkoff.edu.java.scrapper.services;
 
-import org.springframework.stereotype.Service;
 import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
+import ru.tinkoff.edu.java.scrapper.dto.ListLinksResponse;
 import ru.tinkoff.edu.java.scrapper.repositories.JooqLinksRepository;
 
 import java.time.OffsetDateTime;
@@ -27,8 +27,18 @@ public class JooqLinkService implements LinkService {
     }
 
     @Override
-    public List<LinkDto> findAll(Long chatId) {
-        return jooqLinksRepository.findAll(chatId);
+    public List<Long> findAllChatsIdByUrl(String url) {
+        return jooqLinksRepository.findAllChatsIdByUrl(url);
+    }
+
+    @Override
+    public List<LinkDto> findAll() {
+        return null;
+    }
+
+    @Override
+    public ListLinksResponse findAll(Long chatId) {
+        return convertLinkDtoListToListLinksResponse(jooqLinksRepository.findAll(chatId));
     }
 
     @Override

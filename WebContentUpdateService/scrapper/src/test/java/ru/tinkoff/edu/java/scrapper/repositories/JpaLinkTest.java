@@ -12,7 +12,10 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tinkoff.edu.java.scrapper.IntegrationEnvironment;
 import ru.tinkoff.edu.java.scrapper.ScrapperApplication;
+import ru.tinkoff.edu.java.scrapper.dto.ChatDto;
 import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
+import ru.tinkoff.edu.java.scrapper.dto.LinkResponse;
+import ru.tinkoff.edu.java.scrapper.dto.ListLinksResponse;
 import ru.tinkoff.edu.java.scrapper.entity.ChatEntity;
 import ru.tinkoff.edu.java.scrapper.entity.LinkEntity;
 import ru.tinkoff.edu.java.scrapper.services.JpaChatService;
@@ -58,12 +61,15 @@ public class JpaLinkTest extends IntegrationEnvironment {
 
         jpaLinkService.add(url, chatNumber);
 
-        List<LinkDto> links = jpaLinkService.findAll(chatNumber);
+        ListLinksResponse listLinksResponse = jpaLinkService.findAll(chatNumber);
+        List<LinkResponse> links = listLinksResponse.getLinks();
         assertEquals(1, links.size());
         assertEquals(url, links.get(0).getUrl());
-        assertEquals(chatNumber, links.get(0).getChatNumber());
-        assertEquals(lastUpdateDate.toEpochSecond(),
-                links.get(0).getLastUpdateDate().toEpochSecond());
+
+        ChatDto chatDto = jpaChatService.findByChatNumber(chatNumber);
+        LinkDto linkDto = jpaLinkService.findByUrl(url);
+        assertEquals(chatNumber, chatDto.getChatNumber());
+        assertEquals(lastUpdateDate.toEpochSecond(), linkDto.getLastUpdateDate().toEpochSecond());
     }
 
     @Test
@@ -90,7 +96,8 @@ public class JpaLinkTest extends IntegrationEnvironment {
         jpaLinkService.add(url, chatNumber);
 
         jpaLinkService.remove(url, chatNumber);
-        List<LinkDto> links = jpaLinkService.findAll(chatNumber);
+        ListLinksResponse listLinksResponse = jpaLinkService.findAll(chatNumber);
+        List<LinkResponse> links = listLinksResponse.getLinks();
         assertTrue(links.isEmpty());
     }
 
@@ -110,7 +117,8 @@ public class JpaLinkTest extends IntegrationEnvironment {
         jpaChatService.add(chatNumber2);
         jpaLinkService.add(url1, chatNumber2);
 
-        List<LinkDto> links = jpaLinkService.findAll(chatNumber);
+        ListLinksResponse listLinksResponse = jpaLinkService.findAll(chatNumber);
+        List<LinkResponse> links = listLinksResponse.getLinks();
         assertEquals(2, links.size());
     }
 

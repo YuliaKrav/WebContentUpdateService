@@ -14,6 +14,9 @@ public class BotClient {
 
     public void postUpdates(LinkUpdateRequest linkUpdateRequest) {
         webClient.post().uri(uriBuilder -> uriBuilder.path("/api/v1/updates").build())
-                .body(Mono.just(linkUpdateRequest),LinkUpdateRequest.class).retrieve();
+                .body(Mono.just(linkUpdateRequest),LinkUpdateRequest.class)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
     }
 }

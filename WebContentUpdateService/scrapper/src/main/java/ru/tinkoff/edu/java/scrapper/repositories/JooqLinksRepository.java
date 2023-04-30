@@ -6,10 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tinkoff.edu.java.scrapper.domain.jooq.tables.Links;
 import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
+
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -60,7 +60,7 @@ public class JooqLinksRepository {
     @Transactional
     public List<LinkDto> findAllOutdatedLinks(OffsetDateTime dateTime) {
         return dslContext.selectFrom(Links.LINKS)
-                //.where(Links.LINKS.LAST_UPDATE_DATE.lt(dateTime))
+                .where(Links.LINKS.LAST_UPDATE_DATE.lt(dateTime))
                 .fetch()
                 .map(record -> new LinkDto(
                         record.getId(),
@@ -68,5 +68,13 @@ public class JooqLinksRepository {
                         record.getLastUpdateDate(),
                         record.getIdChat().longValue())
                 );
+    }
+
+    public List<Long> findAllChatsIdByUrl(String url) {
+        return dslContext.select(Links.LINKS.ID_CHAT)
+                .from(Links.LINKS)
+                .where(Links.LINKS.URL.eq(url))
+                .fetch()
+                .into(Long.class);
     }
 }

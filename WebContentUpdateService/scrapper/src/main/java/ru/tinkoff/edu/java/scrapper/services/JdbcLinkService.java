@@ -1,6 +1,7 @@
 package ru.tinkoff.edu.java.scrapper.services;
 
 import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
+import ru.tinkoff.edu.java.scrapper.dto.ListLinksResponse;
 import ru.tinkoff.edu.java.scrapper.repositories.JdbcLinksRepository;
 
 import java.time.OffsetDateTime;
@@ -25,8 +26,18 @@ public class JdbcLinkService implements LinkService {
     }
 
     @Override
-    public List<LinkDto> findAll(Long chatId) {
-        return jdbcLinksRepository.findAll(chatId);
+    public List<Long> findAllChatsIdByUrl(String url) {
+        return jdbcLinksRepository.findAllChatsIdByUrl(url);
+    }
+
+    @Override
+    public List<LinkDto> findAll() {
+        return jdbcLinksRepository.findAll();
+    }
+
+    @Override
+    public ListLinksResponse findAll(Long chatId) {
+        return convertLinkDtoListToListLinksResponse(jdbcLinksRepository.findAll(chatId));
     }
 
     @Override

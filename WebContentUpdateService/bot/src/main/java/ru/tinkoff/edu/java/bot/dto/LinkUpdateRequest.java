@@ -52,6 +52,16 @@ public final class LinkUpdateRequest {
     public void setTgChatIds( List<Long> tgChatIds) {
         this.tgChatIds = tgChatIds;
     }
+
+    @Override
+    public String toString() {
+        return "LinkUpdateRequest{" +
+                "id=" + id +
+                ", url='" + url + '\'' +
+                ", description='" + description + '\'' +
+                ", tgChatIds=" + tgChatIds +
+                '}';
+    }
 }
 
 

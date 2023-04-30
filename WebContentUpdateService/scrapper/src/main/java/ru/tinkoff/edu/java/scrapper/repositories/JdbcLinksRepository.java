@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.yaml.snakeyaml.constructor.DuplicateKeyException;
 import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
@@ -39,7 +38,19 @@ public class JdbcLinksRepository {
         jdbcTemplate.update(sql, url, chatNumber);
     }
 
-    @Transactional
+    public List<LinkDto> findAll() {
+        String sql = "SELECT id, url, last_update_date, id_chat FROM public.links";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> {
+            LinkDto linkDTO = new LinkDto();
+            linkDTO.setId(rs.getInt("id"));
+            linkDTO.setUrl(rs.getString("url"));
+            linkDTO.setLastUpdateDate(rs.getObject("last_update_date", OffsetDateTime.class));
+            linkDTO.setChatNumber(rs.getLong("id_chat"));
+            return linkDTO;
+        });
+    }
+
+    //@Transactional
     public List<LinkDto> findAll(Long chatId) {
         String sql = "SELECT id, url, last_update_date, id_chat FROM public.links WHERE id_chat = ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -52,7 +63,7 @@ public class JdbcLinksRepository {
         }, chatId);
     }
 
-    @Transactional
+    //@Transactional
     public List<LinkDto> findAllOutdatedLinks(OffsetDateTime dateTime) {
         String sql = "SELECT id, url, last_update_date, id_chat FROM public.links WHERE last_update_date < ?";
         return jdbcTemplate.query(sql, (rs, rowNum) -> {
@@ -63,6 +74,12 @@ public class JdbcLinksRepository {
             linkDTO.setChatNumber(rs.getLong("id_chat"));
             return linkDTO;
         }, dateTime);
+    }
+
+    //@Transactional
+    public List<Long> findAllChatsIdByUrl(String url) {
+        String sql = "SELECT id_chat FROM links WHERE url = ?";
+        return jdbcTemplate.query(sql, (rs, rowNum) -> rs.getLong("id_chat"), url);
     }
 }
 

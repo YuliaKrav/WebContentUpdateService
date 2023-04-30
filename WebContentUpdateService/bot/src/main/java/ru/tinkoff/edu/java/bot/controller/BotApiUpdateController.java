@@ -4,6 +4,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.tinkoff.edu.java.bot.dto.LinkUpdateRequest;
+import ru.tinkoff.edu.java.bot.service.TelegramBotService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,10 +13,15 @@ import java.util.Map;
 @RequestMapping("/api/v1")
 public class BotApiUpdateController {
     private final Map<Integer, LinkUpdateRequest> history = new HashMap<>();
+    private final TelegramBotService telegramBotService;
+
+    public BotApiUpdateController(TelegramBotService telegramBotService) {
+        this.telegramBotService = telegramBotService;
+    }
 
     @PostMapping("/updates")
     public ResponseEntity<Void> processUpdate(@RequestBody LinkUpdateRequest linkUpdateRequest) {
-
+        telegramBotService.sendNotificationToUser(linkUpdateRequest);
         history.put(linkUpdateRequest.getId(), linkUpdateRequest);
         return new ResponseEntity<>(HttpStatus.OK);
     }
