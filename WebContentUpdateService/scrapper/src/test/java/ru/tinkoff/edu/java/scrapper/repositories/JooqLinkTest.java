@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,17 +23,25 @@ import static org.junit.Assert.*;
 
 @SpringBootTest(classes = ScrapperApplication.class)
 @RunWith(SpringRunner.class)
-@TestPropertySource(properties = {
-        "spring.datasource.url=jdbc:postgresql://localhost:5432/scrapper",
-        "spring.datasource.username=userDB",
-        "spring.datasource.password=userDB_123",
-        "spring.liquibase.enabled=false"
-})
+//@TestPropertySource(properties = {
+//        "spring.datasource.url=jdbc:postgresql://localhost:5432/scrapper",
+//        "spring.datasource.username=userDB",
+//        "spring.datasource.password=userDB_123",
+//        "spring.liquibase.enabled=false"
+//})
 public class JooqLinkTest extends IntegrationEnvironment {
     @Autowired
     private JooqLinksRepository jooqLinksRepository;
     @Autowired
     private JooqChatsRepository jooqChatsRepository;
+
+    @DynamicPropertySource
+    static void registerPgProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", POSTGRES_CONTAINER::getJdbcUrl);
+        registry.add("spring.datasource.username", POSTGRES_CONTAINER::getUsername);
+        registry.add("spring.datasource.password", POSTGRES_CONTAINER::getPassword);
+        registry.add("spring.liquibase.enabled", () -> false);
+    }
 
     @Test
     @Transactional
