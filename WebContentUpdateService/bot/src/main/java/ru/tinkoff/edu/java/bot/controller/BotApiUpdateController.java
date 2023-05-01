@@ -1,14 +1,16 @@
 package ru.tinkoff.edu.java.bot.controller;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.tinkoff.edu.java.bot.dto.LinkUpdateRequest;
 import ru.tinkoff.edu.java.bot.service.TelegramBotService;
+import ru.tinkoff.edu.java.dto.LinkUpdateRequest;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1")
 public class BotApiUpdateController {
@@ -21,6 +23,7 @@ public class BotApiUpdateController {
 
     @PostMapping("/updates")
     public ResponseEntity<Void> processUpdate(@RequestBody LinkUpdateRequest linkUpdateRequest) {
+        log.info("Update message received (HTTP).");
         telegramBotService.sendNotificationToUser(linkUpdateRequest);
         history.put(linkUpdateRequest.getId(), linkUpdateRequest);
         return new ResponseEntity<>(HttpStatus.OK);

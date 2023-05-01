@@ -10,9 +10,10 @@ import parser.LinkProcessingChain;
 import parser.replies.GitHubReply;
 import parser.replies.LinkParserReplies;
 import parser.replies.StackOverflowReply;
+import ru.tinkoff.edu.java.dto.LinkUpdateRequest;
 import ru.tinkoff.edu.java.scrapper.clients.*;
 import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
-import ru.tinkoff.edu.java.scrapper.dto.LinkUpdateRequest;
+import ru.tinkoff.edu.java.scrapper.services.BotService;
 import ru.tinkoff.edu.java.scrapper.services.ChatService;
 import ru.tinkoff.edu.java.scrapper.services.LinkService;
 
@@ -37,8 +38,9 @@ public class LinkUpdaterScheduler {
     @Autowired
     private StackOverflowClient stackOverflowClient;
 
+
     @Autowired
-    private BotClient botClient;
+    private BotService botService;
 
     @Value("${link.update.interval}")
     private String linkUpdateInterval;
@@ -92,8 +94,10 @@ public class LinkUpdaterScheduler {
                                 url,
                                 "updated",
                                 tgChatsId);
-                botClient.postUpdates(linkUpdateRequest);
+                botService.sendUpdates(linkUpdateRequest);
             }
         }
+//        botService.sendUpdates(
+//                new LinkUpdateRequest(1, "url", "description", List.of(743034562L)));
     }
 }

@@ -2,7 +2,7 @@ package ru.tinkoff.edu.java.scrapper.clients;
 
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import ru.tinkoff.edu.java.scrapper.dto.LinkUpdateRequest;
+import ru.tinkoff.edu.java.dto.LinkUpdateRequest;
 
 
 public class BotClient {
