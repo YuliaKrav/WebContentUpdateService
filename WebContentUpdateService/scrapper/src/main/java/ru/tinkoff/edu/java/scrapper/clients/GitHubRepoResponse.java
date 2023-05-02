@@ -8,6 +8,6 @@ import java.time.OffsetDateTime;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record GitHubRepoResponse(@JsonProperty("id") String repoId,
                                  @JsonProperty("full_name") String fullName,
-                                 @JsonProperty("updated_at") OffsetDateTime createdAt,
+                                 @JsonProperty("updated_at") OffsetDateTime updatedAt,
                                  @JsonProperty("pushed_at") OffsetDateTime pushedAt) {
 }
