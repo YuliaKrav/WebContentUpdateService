@@ -1,0 +1,7 @@
+FROM openjdk:17.0.1-jdk-oracle
+
+RUN mkdir /app
+COPY bot/target/scrapper-1.0-SNAPSHOT.jar /app/scrapper-1.0-SNAPSHOT.jar
+WORKDIR /app
+
+CMD ["java", "-jar", "scrapper-1.0-SNAPSHOT.jar"]

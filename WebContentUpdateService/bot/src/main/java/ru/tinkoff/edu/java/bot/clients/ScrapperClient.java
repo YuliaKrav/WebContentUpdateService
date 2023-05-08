@@ -3,8 +3,7 @@ package ru.tinkoff.edu.java.bot.clients;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import ru.tinkoff.edu.java.scrapper.dto.AddLinkRequest;
-import ru.tinkoff.edu.java.scrapper.dto.RemoveLinkRequest;
+
 
 public class ScrapperClient {
     private final WebClient webClient;
@@ -36,7 +35,7 @@ public class ScrapperClient {
                 .block();
     }
 
-    public AddLinkRepoResponse addLink(long chatId, String link) {
+    public AddLinkRequest addLink(long chatId, String link) {
         AddLinkRequest addLinkRequest = new AddLinkRequest(link);
 
         return webClient.post()
@@ -44,11 +43,11 @@ public class ScrapperClient {
                 .header("Tg-Chat-Id", String.valueOf(chatId))
                 .bodyValue(addLinkRequest)
                 .retrieve()
-                .bodyToMono(AddLinkRepoResponse.class)
+                .bodyToMono(AddLinkRequest.class)
                 .block();
     }
 
-    public RemoveLinkRepoResponse removeLink(long chatId, String link) {
+    public RemoveLinkRequest removeLink(long chatId, String link) {
         RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(link);
 
         return webClient.method(HttpMethod.DELETE)
@@ -56,7 +55,7 @@ public class ScrapperClient {
                 .header("Tg-Chat-Id", String.valueOf(chatId))
                 .bodyValue(removeLinkRequest)
                 .retrieve()
-                .bodyToMono(RemoveLinkRepoResponse.class)
+                .bodyToMono(RemoveLinkRequest.class)
                 .block();
     }
 }

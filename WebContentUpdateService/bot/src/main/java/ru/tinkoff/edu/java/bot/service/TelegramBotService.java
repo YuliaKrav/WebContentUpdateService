@@ -11,13 +11,14 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.tinkoff.edu.java.bot.clients.LinkResponse;
 import ru.tinkoff.edu.java.bot.clients.ListLinksResponse;
 import ru.tinkoff.edu.java.bot.clients.ScrapperClient;
 import ru.tinkoff.edu.java.bot.components.BotButtons;
 import ru.tinkoff.edu.java.bot.components.BotCommands;
 import ru.tinkoff.edu.java.bot.configuration.TelegramBotConfiguration;
 import ru.tinkoff.edu.java.dto.LinkUpdateRequest;
-import ru.tinkoff.edu.java.scrapper.dto.LinkResponse;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
