@@ -26,4 +26,4 @@ jobs:
           cache: maven
 
       - name: Build botApp with Maven
-        run: mvn package -f WebContentUpdateService/bot/pom.xml -DskipTests=true
+        run: mvn package -pl WebContentUpdateService/bot -am -DskipTests=true
