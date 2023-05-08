@@ -4,13 +4,13 @@ on:
   push:
     branches: [ "main", "hw8" ]
     paths:
-      - 'bot/**'
-      - 'messages/**'
+    - 'WebContentUpdateService/bot/**'
+    - 'WebContentUpdateService/messages/**'
   pull_request:
     branches: [ "main", "hw8" ]
     paths:
-      - 'bot/**'
-      - 'messages/**'
+    - 'WebContentUpdateService/bot/**'
+    - 'WebContentUpdateService/messages/**'
 
 jobs:
   build:
