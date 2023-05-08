@@ -1,11 +1,10 @@
 package ru.tinkoff.edu.java.bot.clients;
 
+import org.springframework.http.HttpMethod;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import ru.tinkoff.edu.java.bot.dto.ApiErrorResponse;
 import ru.tinkoff.edu.java.scrapper.dto.AddLinkRequest;
-import ru.tinkoff.edu.java.scrapper.dto.LinkResponse;
-import ru.tinkoff.edu.java.scrapper.exceptions.ApiException;
+import ru.tinkoff.edu.java.scrapper.dto.RemoveLinkRequest;
 
 public class ScrapperClient {
     private final WebClient webClient;
@@ -28,12 +27,13 @@ public class ScrapperClient {
                 .onErrorResume(e -> Mono.error(new RuntimeException("Error deleting chat", e))).block();
     }
 
-    public GetAllLinksRepoResponse getAllLinks(long chatId) {
+    public ListLinksResponse getAllLinks(long chatId) {
         return webClient.get()
                 .uri("/api/v1/links")
                 .header("Tg-Chat-Id", String.valueOf(chatId))
                 .retrieve()
-                .bodyToMono(GetAllLinksRepoResponse.class).block();
+                .bodyToMono(ListLinksResponse.class)
+                .block();
     }
 
     public AddLinkRepoResponse addLink(long chatId, String link) {
@@ -44,25 +44,19 @@ public class ScrapperClient {
                 .header("Tg-Chat-Id", String.valueOf(chatId))
                 .bodyValue(addLinkRequest)
                 .retrieve()
-                .bodyToMono(AddLinkRepoResponse.class).block();
+                .bodyToMono(AddLinkRepoResponse.class)
+                .block();
     }
 
     public RemoveLinkRepoResponse removeLink(long chatId, String link) {
-        return webClient.delete()
-                .uri(uriBuilder -> uriBuilder.path("/api/v1/links")
-                        .queryParam("link", link)
-                        .build())
+        RemoveLinkRequest removeLinkRequest = new RemoveLinkRequest(link);
+
+        return webClient.method(HttpMethod.DELETE)
+                .uri("/api/v1/links")
                 .header("Tg-Chat-Id", String.valueOf(chatId))
-                .exchangeToMono(response -> {
-                    int statusCode = response.statusCode().value();
-                    if (statusCode == 200) {
-                        return response.bodyToMono(LinkResponse.class)
-                                .map(linkResponse -> new RemoveLinkRepoResponse(statusCode, linkResponse.toString()));
-                    } else {
-                        return response.bodyToMono(ApiErrorResponse.class)
-                                .flatMap(errorResponse -> Mono.error(new ApiException(statusCode, errorResponse.toString())));
-                    }
-                })
+                .bodyValue(removeLinkRequest)
+                .retrieve()
+                .bodyToMono(RemoveLinkRepoResponse.class)
                 .block();
     }
 }

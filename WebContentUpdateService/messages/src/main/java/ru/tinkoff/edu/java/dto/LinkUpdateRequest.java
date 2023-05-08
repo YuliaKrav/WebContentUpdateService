@@ -1,20 +1,21 @@
-package ru.tinkoff.edu.java.bot.dto;
+package ru.tinkoff.edu.java.dto;
 
+import java.io.Serializable;
 import java.util.List;
 
-public final class LinkUpdateRequest {
+public class LinkUpdateRequest implements Serializable {
     private Integer id;
 
     private String url;
 
     private String description;
 
-    private List<Integer> tgChatIds;
+    private List<Long> tgChatIds;
 
     public LinkUpdateRequest() {
     }
 
-    public LinkUpdateRequest(int id, String url, String description,  List<Integer> tgChatIds) {
+    public LinkUpdateRequest(int id, String url, String description, List<Long> tgChatIds) {
         this.id = id;
         this.url = url;
         this.description = description;
@@ -45,18 +46,11 @@ public final class LinkUpdateRequest {
         this.description = description;
     }
 
-    public  List<Integer> getTgChatIds() {
+    public  List<Long> getTgChatIds() {
         return tgChatIds;
     }
 
-    public void setTgChatIds( List<Integer> tgChatIds) {
+    public void setTgChatIds( List<Long> tgChatIds) {
         this.tgChatIds = tgChatIds;
     }
 }
-
-
-
-
-
-
-

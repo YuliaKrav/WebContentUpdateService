@@ -1,3 +1,5 @@
+package ru.tinkoff.edu.java.scrapper;
+
 import liquibase.Contexts;
 import liquibase.Liquibase;
 import liquibase.database.Database;
@@ -15,7 +17,7 @@ public abstract class IntegrationEnvironment {
     static final String DB_NAME =  "scrapper";
     static final String DB_USER = "user";
     static final String DB_PASSWORD = "password";
-    static final PostgreSQLContainer<?> POSTGRES_CONTAINER;
+    protected static final PostgreSQLContainer<?> POSTGRES_CONTAINER;
 
     static {
         POSTGRES_CONTAINER = new PostgreSQLContainer<>("postgres:14")

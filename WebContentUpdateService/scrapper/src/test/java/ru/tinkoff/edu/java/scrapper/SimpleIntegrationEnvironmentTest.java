@@ -1,5 +1,8 @@
+package ru.tinkoff.edu.java.scrapper;
+
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
+import ru.tinkoff.edu.java.scrapper.IntegrationEnvironment;
 
 import java.io.File;
 import java.nio.file.Paths;

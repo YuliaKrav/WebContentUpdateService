@@ -4,5 +4,5 @@ import ru.tinkoff.edu.java.scrapper.dto.LinkResponse;
 
 import java.util.List;
 
-public record GetAllLinksRepoResponse(List<LinkResponse> links, Integer size) {
+public record ListLinksResponse(List<LinkResponse> links, Integer size) {
 }
