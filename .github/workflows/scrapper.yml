@@ -28,4 +28,5 @@ jobs:
           cache: maven
 
       - name: Build scrapperApp with Maven
-        run: mvn package -pl WebContentUpdateService/scrapper -am -DskipTests=true
+        working-directory: WebContentUpdateService
+        run: mvn package -pl scrapper -am -DskipTests=true
