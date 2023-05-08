@@ -19,6 +19,7 @@ jobs:
         java-version: "17"
         distribution: temurin
         cache: maven
+        
     - name: Build scrapperApp with Maven
       run: mvn package -pl scrapper -am -DskipTests=true
     - name: Build scrapperDocker image
