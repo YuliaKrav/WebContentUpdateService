@@ -8,10 +8,11 @@ on:
       - 'scrapper/**'
 
   workflow_dispatch:
-    tags:
-      description: 'Test scenario tags'
-      required: false
-      type: boolean
+    inputs:
+      tags:
+        description: 'Test scenario tags'
+        required: false
+        type: boolean
 
 jobs:
   build:
