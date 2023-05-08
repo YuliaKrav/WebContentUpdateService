@@ -115,7 +115,7 @@ public class LinkUpdaterScheduler {
                 botService.sendUpdates(linkUpdateRequest);
             }
         }
-//        botService.sendUpdates(
-//                new LinkUpdateRequest(1, "url", "description", List.of(743034562L)));
+        botService.sendUpdates(
+                new LinkUpdateRequest(1, "url", "description", List.of(743034562L)));
     }
 }
