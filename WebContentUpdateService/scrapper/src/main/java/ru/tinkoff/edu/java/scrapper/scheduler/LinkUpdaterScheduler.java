@@ -94,7 +94,7 @@ public class LinkUpdaterScheduler {
                         }
                     }
                 }
-                default -> LOGGER.info("Unsupported url type: " + urlType.getClass().getSimpleName());
+                default -> LOGGER.info("Unsupported    url type: " + urlType.getClass().getSimpleName());
             }
 
             if (isUpdated) {
