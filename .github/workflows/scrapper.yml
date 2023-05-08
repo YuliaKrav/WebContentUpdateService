@@ -6,6 +6,13 @@ on:
   pull_request:
     paths:
       - 'scrapper/**'
+
+  workflow_dispatch:
+    tags:
+      description: 'Test scenario tags'
+      required: false
+      type: boolean
+
 jobs:
   build:
     runs-on: ubuntu-latest
