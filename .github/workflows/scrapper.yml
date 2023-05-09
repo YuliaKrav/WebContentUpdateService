@@ -14,9 +14,11 @@ on:
     - 'WebContentUpdateService/messages/**'
     - 'WebContentUpdateService/link-parser/**'
 
+permissions:
+  packages: write
+
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/scrapper-app | toLower
 
 jobs:
   build:
@@ -34,6 +36,12 @@ jobs:
       - name: Build scrapperApp with Maven
         working-directory: WebContentUpdateService
         run: mvn package -pl scrapper -am -DskipTests=true
+
+      - name: Convert repository name to lowercase
+        run: |
+          repo_name_lower_case=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          image_name="${repo_name_lower_case}/scrapper-app"
+          echo "IMAGE_NAME=$image_name" >> $GITHUB_ENV
 
       - name: Build scrapperDocker image
         working-directory: WebContentUpdateService/scrapper
