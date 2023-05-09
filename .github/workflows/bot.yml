@@ -31,6 +31,10 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Run Checkstyle
+        working-directory: WebContentUpdateService
+        run: mvn -pl bot -am checkstyle:check
+
       - name: Build botApp with Maven
         working-directory: WebContentUpdateService
         run: mvn package -pl bot -am -DskipTests=true

@@ -13,7 +13,13 @@ public class ApiErrorResponse {
 
     }
 
-    public ApiErrorResponse(String description, String code, String exceptionName, String exceptionMessage, List<String> stacktrace) {
+    public ApiErrorResponse(
+        String description,
+        String code,
+        String exceptionName,
+        String exceptionMessage,
+        List<String> stacktrace
+    ) {
         this.description = description;
         this.code = code;
         this.exceptionName = exceptionName;

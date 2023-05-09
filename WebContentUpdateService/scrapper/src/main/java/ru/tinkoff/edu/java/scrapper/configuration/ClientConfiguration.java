@@ -12,22 +12,24 @@ public class ClientConfiguration {
 
     @Bean
     public GitHubClient gitHubClient(
-            @Value("${github.api.base-url:#{'${github.api.default-base-url}'}}") String gitHubBaseUrl) {
+        @Value("${github.api.base-url:#{'${github.api.default-base-url}'}}") String gitHubBaseUrl
+    ) {
         return new GitHubClient(gitHubBaseUrl);
     }
 
     @Bean
     public StackOverflowClient stackOverflowClient(
-            @Value("${stackoverflow.api.base-url:#{'${stackoverflow.api.default-base-url}'}}") String stackOverflowBaseUrl) {
+        @Value("${stackoverflow.api.base-url:#{'${stackoverflow.api.default-base-url}'}}") String stackOverflowBaseUrl
+    ) {
         return new StackOverflowClient(stackOverflowBaseUrl);
     }
 
     @Bean
     public BotClient scrapperClient(
-            @Value("${bot.api.base-url:#{'${bot.api.default-base-url}'}}")
-            String scrapperBaseUrl) {
+        @Value("${bot.api.base-url:#{'${bot.api.default-base-url}'}}")
+        String scrapperBaseUrl
+    ) {
         return new BotClient(scrapperBaseUrl);
     }
-
 
 }

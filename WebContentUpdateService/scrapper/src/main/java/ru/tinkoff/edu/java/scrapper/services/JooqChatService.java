@@ -1,13 +1,10 @@
 package ru.tinkoff.edu.java.scrapper.services;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 import ru.tinkoff.edu.java.scrapper.dto.ChatDto;
 import ru.tinkoff.edu.java.scrapper.repositories.JooqChatsRepository;
 
-import java.util.List;
-
-
-public class JooqChatService implements ChatService{
+public class JooqChatService implements ChatService {
 
     private final JooqChatsRepository jooqChatsRepository;
 

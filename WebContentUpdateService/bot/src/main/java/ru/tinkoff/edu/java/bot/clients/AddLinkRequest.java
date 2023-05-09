@@ -1,4 +1,4 @@
 package ru.tinkoff.edu.java.bot.clients;
 
-public record AddLinkRequest (String link) {
+public record AddLinkRequest(String link) {
 }

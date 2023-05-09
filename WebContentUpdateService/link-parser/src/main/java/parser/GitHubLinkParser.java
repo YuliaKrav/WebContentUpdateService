@@ -1,12 +1,16 @@
 package parser;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import parser.replies.GitHubReply;
 import parser.replies.LinkParserReplies;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-
 public final class GitHubLinkParser extends LinkProcessor implements LinkParser {
+    private static final Logger LOGGER = LoggerFactory.getLogger(GitHubLinkParser.class);
+    private final int segmentsLength = 3;
+
     public GitHubLinkParser(LinkProcessor nextLinkProcessor) {
         super(nextLinkProcessor);
     }
@@ -16,15 +20,15 @@ public final class GitHubLinkParser extends LinkProcessor implements LinkParser 
             URI uri = new URI(url);
             if ("github.com".equals(uri.getHost())) {
                 String[] pathSegments = uri.getPath().split("/");
-                if (pathSegments.length >= 3) {
-                    System.out.println("github: " + url + " " + pathSegments[1] + " " + pathSegments[2]);
+                if (pathSegments.length >= segmentsLength) {
+                    LOGGER.info("github: " + url + " " + pathSegments[1] + " " + pathSegments[2]);
                     return new GitHubReply(url, pathSegments[1], pathSegments[2]);
                 }
             }
             return super.process(url);
 
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            LOGGER.info(e.getMessage());
         }
         return null;
     }
