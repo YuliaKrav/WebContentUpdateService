@@ -30,3 +30,7 @@ jobs:
       - name: Build scrapperApp with Maven
         working-directory: WebContentUpdateService
         run: mvn package -pl scrapper -am -DskipTests=true
+
+      - name: Build scrapperDocker image
+        working-directory: WebContentUpdateService/scrapper
+        run: docker build -t scrapper-app:latest .

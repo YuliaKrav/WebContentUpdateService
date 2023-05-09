@@ -28,3 +28,7 @@ jobs:
       - name: Build botApp with Maven
         working-directory: WebContentUpdateService
         run: mvn package -pl bot -am -DskipTests=true
+
+      - name: Build botDocker image
+        working-directory: WebContentUpdateService/bot
+        run: docker build -t bot-app:latest .
