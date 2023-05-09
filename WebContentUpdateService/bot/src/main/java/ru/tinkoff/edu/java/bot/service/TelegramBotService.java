@@ -17,7 +17,6 @@ import ru.tinkoff.edu.java.bot.clients.ScrapperClient;
 import ru.tinkoff.edu.java.bot.components.BotButtons;
 import ru.tinkoff.edu.java.bot.components.BotCommands;
 import ru.tinkoff.edu.java.bot.configuration.TelegramBotConfiguration;
-
 import ru.tinkoff.edu.java.dto.LinkUpdateRequest;
 
 import java.util.*;
