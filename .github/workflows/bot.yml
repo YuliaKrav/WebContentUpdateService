@@ -14,7 +14,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/bot-app
+  IMAGE_NAME: ${{ github.repository }}/bot-app | toLower
 
 jobs:
   build:
