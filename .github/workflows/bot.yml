@@ -33,7 +33,7 @@ jobs:
 
       - name: Run Checkstyle
         working-directory: WebContentUpdateService
-        run: mvn -pl bot -am checkstyle:check -Dcheckstyle.config.location=../checkstyle.xml
+        run: mvn -pl bot -am checkstyle:check -Dcheckstyle.config.location=${{ github.workspace }}/checkstyle.xml
 
       - name: Build botApp with Maven
         working-directory: WebContentUpdateService
