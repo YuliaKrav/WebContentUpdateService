@@ -14,7 +14,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}/bot-app | toLower
 
 jobs:
   build:
@@ -32,6 +31,12 @@ jobs:
       - name: Build botApp with Maven
         working-directory: WebContentUpdateService
         run: mvn package -pl bot -am -DskipTests=true
+
+      - name: Convert repository name to lowercase
+        run: |
+          repo_name_lower_case=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          image_name="${repo_name_lower_case}/bot-app"
+          echo "IMAGE_NAME=$image_name" >> $GITHUB_ENV
 
       - name: Build botDocker image
         working-directory: WebContentUpdateService/bot
