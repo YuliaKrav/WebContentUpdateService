@@ -110,6 +110,9 @@ public class LinkUpdaterScheduler {
 //                }
                 List<Long> tgChatsId = new ArrayList<>();
                 tgChatsId.add(outdatedLinkDTO.getChatNumber());
+                for (Long tgChatId : tgChatsId) {
+                    linkService.updateLastUpdateDate(url, tgChatId, currentTime);
+                }
 
                 LinkUpdateRequest linkUpdateRequest =
                     new LinkUpdateRequest(

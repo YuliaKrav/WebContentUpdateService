@@ -21,9 +21,8 @@ import ru.tinkoff.edu.java.bot.components.BotButtons;
 import ru.tinkoff.edu.java.bot.components.BotCommands;
 import ru.tinkoff.edu.java.bot.components.Commands;
 import ru.tinkoff.edu.java.bot.configuration.TelegramBotConfiguration;
+
 import ru.tinkoff.edu.java.dto.LinkUpdateRequest;
-
-
 
 //@NoArgsConstructor(force = true) //for TelegramBotServiceTest
 @Slf4j
