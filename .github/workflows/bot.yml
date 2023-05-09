@@ -12,6 +12,9 @@ on:
     - 'WebContentUpdateService/bot/**'
     - 'WebContentUpdateService/messages/**'
 
+permissions:
+  packages: write
+
 env:
   REGISTRY: ghcr.io
 
