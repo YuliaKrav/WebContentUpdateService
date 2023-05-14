@@ -1,5 +1,7 @@
 package ru.tinkoff.edu.java.bot.service;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -33,12 +35,20 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
     private final String botName;
 
     private final ScrapperClient scrapperClient;
+    private final Counter messagesCounter;
 
-    public TelegramBotService(TelegramBotConfiguration config, ScrapperClient scrapperClient) {
+    public TelegramBotService(
+        TelegramBotConfiguration config,
+        ScrapperClient scrapperClient,
+        MeterRegistry meterRegistry
+    ) {
         this.botToken = config.getToken();
         this.botName = config.getName();
         this.scrapperClient = scrapperClient;
         this.allChatsId = new HashSet<>();
+        this.messagesCounter = Counter.builder("bot_messages_counter")
+            .description("The number of messages in bot application.")
+            .register(meterRegistry);
 
         try {
             this.execute(new SetMyCommands(LIST_OF_COMMANDS, new BotCommandScopeDefault(), null));
@@ -51,6 +61,8 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
     public void onUpdateReceived(Update update) {
         //long chatId = 0;
         String receivedMessage;
+        messagesCounter.increment();
+        log.info("Current value of messagesCounter: {}", messagesCounter.count());
 
         if (update.hasMessage()) {
             // chatId = update.getMessage().getChatId();
