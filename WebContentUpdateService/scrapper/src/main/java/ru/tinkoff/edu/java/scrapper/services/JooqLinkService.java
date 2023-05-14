@@ -1,12 +1,10 @@
 package ru.tinkoff.edu.java.scrapper.services;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
 import ru.tinkoff.edu.java.scrapper.dto.ListLinksResponse;
 import ru.tinkoff.edu.java.scrapper.repositories.JooqLinksRepository;
-
-import java.time.OffsetDateTime;
-import java.util.List;
-
 
 public class JooqLinkService implements LinkService {
 

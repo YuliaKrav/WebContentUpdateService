@@ -1,5 +1,9 @@
 package ru.tinkoff.edu.java.scrapper.scheduler;
 
+import java.time.Duration;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,22 +15,19 @@ import parser.replies.GitHubReply;
 import parser.replies.LinkParserReplies;
 import parser.replies.StackOverflowReply;
 import ru.tinkoff.edu.java.dto.LinkUpdateRequest;
-import ru.tinkoff.edu.java.scrapper.clients.*;
+import ru.tinkoff.edu.java.scrapper.clients.GitHubClient;
+import ru.tinkoff.edu.java.scrapper.clients.GitHubRepoResponse;
+import ru.tinkoff.edu.java.scrapper.clients.StackOverflowClient;
+import ru.tinkoff.edu.java.scrapper.clients.StackOverflowQuestionResponse;
 import ru.tinkoff.edu.java.scrapper.constansts.InfoMessages;
 import ru.tinkoff.edu.java.scrapper.dto.LinkDto;
 import ru.tinkoff.edu.java.scrapper.services.BotService;
 import ru.tinkoff.edu.java.scrapper.services.ChatService;
 import ru.tinkoff.edu.java.scrapper.services.LinkService;
 
-import java.time.Duration;
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 @Component
 public class LinkUpdaterScheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkUpdaterScheduler.class);
-
 
     @Autowired
     private LinkService linkService;
@@ -39,7 +40,6 @@ public class LinkUpdaterScheduler {
 
     @Autowired
     private StackOverflowClient stackOverflowClient;
-
 
     @Autowired
     private BotService botService;
@@ -67,26 +67,31 @@ public class LinkUpdaterScheduler {
             switch (urlType) {
                 case GitHubReply gitHubReply -> {
                     GitHubRepoResponse response = gitHubClient
-                            .fetchRepoUpdates(gitHubReply.user(), gitHubReply.repository());
+                        .fetchRepoUpdates(gitHubReply.user(), gitHubReply.repository());
 
                     if (response.updatedAt().isAfter(lastLinkUpdateDate)) {
                         isUpdated = true;
-                        updateDescription = InfoMessages.LINK_UPDATED;;
-                        if (response.pushedAt().isAfter(lastLinkUpdateDate) && response.pushedAt().isBefore(currentTime)) {
+                        updateDescription = InfoMessages.LINK_UPDATED;
+
+                        if (response.pushedAt().isAfter(lastLinkUpdateDate)
+                            && response.pushedAt().isBefore(currentTime)) {
                             updateDescription += InfoMessages.NEW_COMMENTS_ADDED;
                         }
                     }
                 }
                 case StackOverflowReply stackOverflowReply -> {
                     StackOverflowQuestionResponse currentResponse =
-                            stackOverflowClient.fetchQuestionUpdates(Long.parseLong(stackOverflowReply.idRequest()));
+                        stackOverflowClient.fetchQuestionUpdates(Long.parseLong(stackOverflowReply.idRequest()));
                     StackOverflowQuestionResponse.Item currentResponseItem = currentResponse.items().get(0);
 
                     if (currentResponseItem.lastActivityDate().isAfter(outdatedTime)) {
                         isUpdated = true;
                         updateDescription = InfoMessages.LINK_UPDATED;
                         StackOverflowQuestionResponse outdatedResponse =
-                                stackOverflowClient.fetchNewAnswers(Long.parseLong(stackOverflowReply.idRequest()), lastLinkUpdateDate);
+                            stackOverflowClient.fetchNewAnswers(
+                                Long.parseLong(stackOverflowReply.idRequest()),
+                                lastLinkUpdateDate
+                            );
                         StackOverflowQuestionResponse.Item outdatedResponseItem = outdatedResponse.items().get(0);
 
                         if (currentResponseItem.answerCount() > outdatedResponseItem.answerCount()) {
@@ -105,13 +110,17 @@ public class LinkUpdaterScheduler {
 //                }
                 List<Long> tgChatsId = new ArrayList<>();
                 tgChatsId.add(outdatedLinkDTO.getChatNumber());
+                for (Long tgChatId : tgChatsId) {
+                    linkService.updateLastUpdateDate(url, tgChatId, currentTime);
+                }
 
                 LinkUpdateRequest linkUpdateRequest =
-                        new LinkUpdateRequest(
-                                outdatedLinkDTO.getId(),
-                                url,
-                                updateDescription,
-                                tgChatsId);
+                    new LinkUpdateRequest(
+                        outdatedLinkDTO.getId(),
+                        url,
+                        updateDescription,
+                        tgChatsId
+                    );
                 botService.sendUpdates(linkUpdateRequest);
             }
         }

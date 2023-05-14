@@ -1,10 +1,8 @@
 package ru.tinkoff.edu.java.scrapper.services;
 
+import java.util.List;
 import ru.tinkoff.edu.java.scrapper.dto.ChatDto;
 import ru.tinkoff.edu.java.scrapper.repositories.JdbcChatsRepository;
-
-import java.util.List;
-
 
 public class JdbcChatService implements ChatService {
     private final JdbcChatsRepository jdbcChatsRepository;
@@ -26,5 +24,5 @@ public class JdbcChatService implements ChatService {
     @Override
     public List<ChatDto> findAll() {
         return jdbcChatsRepository.findAll();
-}
+    }
 }

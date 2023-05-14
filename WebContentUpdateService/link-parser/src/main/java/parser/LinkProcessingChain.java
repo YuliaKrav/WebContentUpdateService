@@ -3,6 +3,9 @@ package parser;
 import parser.replies.LinkParserReplies;
 
 public class LinkProcessingChain {
+    /**
+     * This variable stores the linkProcessorChain.
+     */
     LinkProcessor linkProcessorChain;
 
     public LinkProcessingChain() {

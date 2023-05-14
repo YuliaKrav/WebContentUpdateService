@@ -1,13 +1,10 @@
 package ru.tinkoff.edu.java.scrapper.repositories;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.tinkoff.edu.java.scrapper.dto.ChatDto;
-
-import java.util.List;
-
 
 public class JdbcChatsRepository {
 
@@ -33,7 +30,9 @@ public class JdbcChatsRepository {
     @Transactional
     public List<ChatDto> findAll() {
         String sql = "SELECT chat_number, user_name FROM public.chats";
-        return jdbcTemplate.query(sql,
-                (rs, rowNum) -> new ChatDto(rs.getLong(1), rs.getString(2)));
+        return jdbcTemplate.query(
+            sql,
+            (rs, rowNum) -> new ChatDto(rs.getLong(1), rs.getString(2))
+        );
     }
 }

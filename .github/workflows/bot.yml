@@ -1,0 +1,82 @@
+name: java_bot_CI
+
+on:
+  push:
+    branches: [ "main", "hw8" ]
+    paths:
+    - 'WebContentUpdateService/bot/**'
+    - 'WebContentUpdateService/messages/**'
+  pull_request:
+    branches: [ "main", "hw8" ]
+    paths:
+    - 'WebContentUpdateService/bot/**'
+    - 'WebContentUpdateService/messages/**'
+
+permissions:
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  Checkstyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Run Checkstyle
+        working-directory: WebContentUpdateService
+        run: mvn -pl bot -am checkstyle:check -e
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up JDK17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Build botApp with Maven
+        working-directory: WebContentUpdateService
+        run: mvn package -pl bot -am -DskipTests=true
+
+      - name: Convert repository name to lowercase
+        run: |
+          repo_name_lower_case=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          image_name="${repo_name_lower_case}/bot-app"
+          echo "IMAGE_NAME=$image_name" >> $GITHUB_ENV
+
+      - name: Build botDocker image
+        working-directory: WebContentUpdateService/bot
+#        run: docker build -t bot-app:latest .
+        run: docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Push botDocker image
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: WebContentUpdateService/bot
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

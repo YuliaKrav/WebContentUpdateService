@@ -46,11 +46,11 @@ public class LinkUpdateRequest implements Serializable {
         this.description = description;
     }
 
-    public  List<Long> getTgChatIds() {
+    public List<Long> getTgChatIds() {
         return tgChatIds;
     }
 
-    public void setTgChatIds( List<Long> tgChatIds) {
+    public void setTgChatIds(List<Long> tgChatIds) {
         this.tgChatIds = tgChatIds;
     }
 }

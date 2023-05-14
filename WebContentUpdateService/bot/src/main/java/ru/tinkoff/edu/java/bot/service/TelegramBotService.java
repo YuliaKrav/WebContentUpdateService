@@ -1,6 +1,9 @@
 package ru.tinkoff.edu.java.bot.service;
 
-
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -11,16 +14,14 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.tinkoff.edu.java.bot.clients.LinkResponse;
 import ru.tinkoff.edu.java.bot.clients.ListLinksResponse;
 import ru.tinkoff.edu.java.bot.clients.ScrapperClient;
 import ru.tinkoff.edu.java.bot.components.BotButtons;
 import ru.tinkoff.edu.java.bot.components.BotCommands;
+import ru.tinkoff.edu.java.bot.components.Commands;
 import ru.tinkoff.edu.java.bot.configuration.TelegramBotConfiguration;
 import ru.tinkoff.edu.java.dto.LinkUpdateRequest;
-import ru.tinkoff.edu.java.scrapper.dto.LinkResponse;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 //@NoArgsConstructor(force = true) //for TelegramBotServiceTest
 @Slf4j
@@ -79,26 +80,44 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
 
     public void sendNotificationToUser(LinkUpdateRequest linkUpdateRequest) {
         String message =
-                String.format("Произошли изменения по ссылке '%s': %s",
-                        linkUpdateRequest.getUrl(),
-                        linkUpdateRequest.getDescription());
+            String.format(
+                "Произошли изменения по ссылке '%s': %s",
+                linkUpdateRequest.getUrl(),
+                linkUpdateRequest.getDescription()
+            );
         for (Long tgChatId : linkUpdateRequest.getTgChatIds()) {
             sendText(tgChatId, message);
         }
     }
 
     private void botAnswerUtils(String receivedMessage, Message message) {
-        if (receivedMessage.contains("/track") || receivedMessage.contains("/untrack")) {
+        Commands command = Arrays.stream(Commands.values())
+            .filter(cmd -> receivedMessage.startsWith(cmd.getCommandText()))
+            .findFirst()
+            .orElse(null);
+
+        if (command == null) {
+            sendText(message.getChatId(), UNKNOWN_COMMAND);
+            return;
+        }
+
+        if (command == Commands.TRACK || command == Commands.UNTRACK) {
             String[] splitString = receivedMessage.split("\\s+");
-            if (splitString.length < 2) sendText(message.getChatId(), INVALID_FORMAT_TEXT);
-            if (splitString[0].equals("/track")) trackLink(message, splitString[1]);
-            if (splitString[0].equals("/untrack")) untrackLink(message, splitString[1]);
+            if (splitString.length < 2) {
+                sendText(message.getChatId(), INVALID_FORMAT_TEXT);
+            }
+            if (command == Commands.TRACK) {
+                trackLink(message, splitString[1]);
+            }
+            if (command == Commands.UNTRACK) {
+                untrackLink(message, splitString[1]);
+            }
 
         } else {
-            switch (receivedMessage) {
-                case "/start" -> startBot(message.getChatId(), message.getFrom());
-                case "/help" -> sendText(message.getChatId(), HELP_TEXT);
-                case "/list" -> sendList(message);
+            switch (command) {
+                case START -> startBot(message.getChatId(), message.getFrom());
+                case HELP -> sendText(message.getChatId(), HELP_TEXT);
+                case LIST -> sendList(message);
                 default -> sendText(message.getChatId(), UNKNOWN_COMMAND);
             }
         }
@@ -110,7 +129,7 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
         SendMessage message = new SendMessage();
         message.setChatId(Long.toString(chatId));
         message.setText("Привет, " + user.getFirstName()
-                + "! Я бот, " + chatId + " который поможет тебе отслеживать ссылки.'");
+            + "! Я бот, " + chatId + " который поможет тебе отслеживать ссылки.'");
         message.setReplyMarkup(BotButtons.inlineMarkup());
         executeMessage(message);
         scrapperClient.registerChat(chatId);
@@ -147,8 +166,8 @@ public class TelegramBotService extends TelegramLongPollingBot implements BotCom
 
     private String getAllLinksStringFromResponse(ListLinksResponse listLinksResponse) {
         return listLinksResponse.links().size() == 0
-                ? EMPTY_LIST
-                : listLinksResponse.links().stream().map(LinkResponse::getUrl).collect(Collectors.joining("\n"));
+            ? EMPTY_LIST
+            : listLinksResponse.links().stream().map(LinkResponse::getUrl).collect(Collectors.joining("\n"));
     }
 
     void trackLink(Message message, String link) {
