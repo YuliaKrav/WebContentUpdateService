@@ -9,8 +9,9 @@ import ru.tinkoff.edu.java.bot.clients.ScrapperClient;
 public class ClientConfiguration {
     @Bean
     public ScrapperClient scrapperClient(
-            @Value("${scrapper.api.base-url:#{'${scrapper.api.default-base-url}'}}")
-            String scrapperBaseUrl) {
+        @Value("${scrapper.api.base-url:#{'${scrapper.api.default-base-url}'}}")
+        String scrapperBaseUrl
+    ) {
         return new ScrapperClient(scrapperBaseUrl);
     }
 }

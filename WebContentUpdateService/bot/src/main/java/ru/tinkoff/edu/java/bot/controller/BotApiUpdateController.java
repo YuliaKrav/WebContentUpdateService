@@ -1,5 +1,6 @@
 package ru.tinkoff.edu.java.bot.controller;
 
+import io.micrometer.core.annotation.Timed;
 import java.util.HashMap;
 import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import ru.tinkoff.edu.java.bot.service.TelegramBotService;
 import ru.tinkoff.edu.java.dto.LinkUpdateRequest;
 
 @Slf4j
+@Timed
 @RestController
 @RequestMapping("/api/v1")
 public class BotApiUpdateController {

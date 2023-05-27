@@ -1,5 +1,7 @@
 package ru.tinkoff.edu.java.scrapper.scheduler;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -28,24 +30,34 @@ import ru.tinkoff.edu.java.scrapper.services.LinkService;
 @Component
 public class LinkUpdaterScheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(LinkUpdaterScheduler.class);
+    private final Counter messagesCounter;
 
-    @Autowired
-    private LinkService linkService;
-
-    @Autowired
-    private ChatService chatService;
-
-    @Autowired
-    private GitHubClient gitHubClient;
-
-    @Autowired
-    private StackOverflowClient stackOverflowClient;
-
-    @Autowired
-    private BotService botService;
+    private final LinkService linkService;
+    private final ChatService chatService;
+    private final GitHubClient gitHubClient;
+    private final StackOverflowClient stackOverflowClient;
+    private final BotService botService;
 
     @Value("${link.update.interval}")
     private String linkUpdateInterval;
+
+    @Autowired
+    public LinkUpdaterScheduler(MeterRegistry meterRegistry,
+        LinkService linkService,
+        ChatService chatService,
+        GitHubClient gitHubClient,
+        StackOverflowClient stackOverflowClient,
+        BotService botService) {
+        this.linkService = linkService;
+        this.chatService = chatService;
+        this.gitHubClient = gitHubClient;
+        this.stackOverflowClient = stackOverflowClient;
+        this.botService = botService;
+
+        this.messagesCounter = Counter.builder("scrapper_messages_counter")
+            .description("The number of messages in scrapper application.")
+            .register(meterRegistry);
+    }
 
     @Scheduled(fixedDelayString = "#{@scheduledIntervalMs}")
     public void update() {
@@ -122,9 +134,13 @@ public class LinkUpdaterScheduler {
                         tgChatsId
                     );
                 botService.sendUpdates(linkUpdateRequest);
+                messagesCounter.increment();
+                LOGGER.info("Current value of messagesCounter: {}", messagesCounter.count());
             }
         }
-//        botService.sendUpdates(
-//                new LinkUpdateRequest(1, "url", "description", List.of(743034562L)));
+        botService.sendUpdates(
+            new LinkUpdateRequest(1, "url", "description", List.of(743034562L)));
+        messagesCounter.increment();
+        LOGGER.info("Current value of messagesCounter: {}", messagesCounter.count());
     }
 }
